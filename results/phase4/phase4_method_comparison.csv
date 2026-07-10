@@ -1,0 +1,9 @@
+method,average_rate_e2e_mean,average_rate_e2e_std,outage_count_mean,constraint_violation_count_mean,source
+random,1833743.3394669043,0.0,0,6,phase1_baseline
+static,1746559.4043063342,0.0,0,0,phase1_baseline
+midpoint,2981117.0676559405,0.0,0,94,phase1_baseline
+horizontal_midpoint,1722315.499310669,0.0,0,0,phase1_baseline
+greedy_rate,2415220.409179593,0.0,0,0,phase1_baseline
+balanced_link,3416483.4826211524,0.0,0,1,phase1_baseline
+td3_multiseed_phase3,4543915.244093902,524516.7030751582,0.0,84.33333333333333,phase3_reference
+td3_minus_best_baseline,1127431.76147275,524516.7030751582,,,best_baseline=balanced_link

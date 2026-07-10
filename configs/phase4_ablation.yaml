@@ -1,0 +1,50 @@
+phase4:
+  output_dir: results/phase4
+  reference_phase3_dir: results/phase3
+  baseline_results_path: results/phase1/baseline_results.csv
+
+ablation_training:
+  training:
+    episodes: 80
+    max_steps: 100
+    start_steps: 500
+    batch_size: 128
+    replay_size: 100000
+    eval_interval: 10
+    save_interval: 40
+    train_every: 100
+    updates_per_train: 1
+    reward_scale: 1.0
+
+ablations:
+  td3_short_default:
+    seed: 0
+    label: TD3 short default
+    changed_setting: short TD3 control using Phase 3 defaults
+    overrides: {}
+
+  no_observation_normalizer:
+    seed: 0
+    label: No observation normalizer
+    changed_setting: normalizer.enabled=false
+    overrides:
+      normalizer:
+        enabled: false
+
+  small_network:
+    seed: 0
+    label: Small actor critic network
+    changed_setting: network.hidden_sizes=[128, 128]
+    overrides:
+      network:
+        hidden_sizes:
+          - 128
+          - 128
+
+  no_exploration_decay:
+    seed: 0
+    label: No exploration noise decay
+    changed_setting: td3.exploration_noise_decay=1.0
+    overrides:
+      td3:
+        exploration_noise_decay: 1.0
