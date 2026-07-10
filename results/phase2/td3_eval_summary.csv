@@ -1,0 +1,2 @@
+policy,episode_length,eval_reward,eval_average_rate_e2e,eval_average_rate_HR,eval_average_rate_RL,eval_constraint_violation_count,best_baseline_policy,best_baseline_average_rate_e2e,td3_minus_best_baseline_rate_e2e
+td3,100,390.40365992311166,4775240.765550622,9550481.531101244,11568649.228501849,81,balanced_link,3416483.4826211524,1358757.2829294694

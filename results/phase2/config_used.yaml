@@ -1,0 +1,59 @@
+simulation:
+  delta_t_s: 1.0
+  max_steps: 100
+
+area:
+  bounds_m:
+    x:
+      - 0.0
+      - 1000.0
+    y:
+      - 0.0
+      - 1000.0
+    z:
+      - 50.0
+      - 500.0
+
+uavs:
+  q_H_m:
+    - 500.0
+    - 500.0
+    - 1000.0
+  q_R_initial_m:
+    - 500.0
+    - 500.0
+    - 200.0
+  q_L_m:
+    - 800.0
+    - 500.0
+    - 100.0
+
+communication:
+  beta0: 0.001
+  path_loss_exponent: 2.2
+  min_distance_m: 1.0
+  bandwidth_hz: 1000000.0
+  noise_power_w: 1.0e-13
+  power_HR_w: 1.0
+  power_RL_w: 1.0
+  half_duplex: true
+  r_min_bps: 1000000.0
+
+antenna:
+  model: dipole
+  g_max: 1.0
+  g_min: 0.05
+
+reward:
+  omega_R: 1.0e-6
+  omega_E: 0.01
+  omega_O: 1.0
+  omega_B: 0.5
+  omega_C: 1.0
+  kappa: 0.001
+  epsilon: 1.0e-9
+
+environment:
+  max_speed_mps: 30.0
+  action_dim: 3
+  observation_dim: 15

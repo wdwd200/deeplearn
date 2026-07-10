@@ -1,0 +1,9 @@
+{
+  "batch_size": 64,
+  "buffer_capacity": 50000,
+  "episodes": 20,
+  "eval_interval": 5,
+  "reward_scale": 1.0,
+  "seed": 11,
+  "start_steps": 200
+}
