@@ -1,0 +1,25 @@
+base_config: configs/td3_default.yaml
+max_runs: 6
+seed: 0
+
+training:
+  episodes: 30
+  max_steps: 100
+  start_steps: 300
+  eval_interval: 10
+  train_every: 100
+
+sweep:
+  actor_lr:
+    - 0.0001
+    - 0.0003
+  critic_lr:
+    - 0.0001
+    - 0.0003
+  exploration_noise:
+    - 0.05
+    - 0.1
+    - 0.2
+  policy_noise:
+    - 0.1
+    - 0.2

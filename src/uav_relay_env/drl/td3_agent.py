@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Any
+from typing import Any, Sequence
 
 import numpy as np
 import torch
@@ -19,7 +19,9 @@ class TD3Agent:
         obs_dim: int,
         action_dim: int,
         max_action: float,
-        hidden_dim: int = 64,
+        hidden_dim: int | None = None,
+        hidden_sizes: int | Sequence[int] | None = None,
+        activation: str = "relu",
         actor_lr: float = 1.0e-3,
         critic_lr: float = 1.0e-3,
         gamma: float = 0.99,
@@ -42,16 +44,19 @@ class TD3Agent:
         self.policy_delay = int(policy_delay)
         self.exploration_noise = float(exploration_noise)
         self.reward_scale = float(reward_scale)
+        self.hidden_sizes = list(hidden_sizes) if hidden_sizes is not None and not isinstance(hidden_sizes, int) else hidden_sizes
+        self.activation = activation
         self.device = torch.device(device) if device is not None else torch.device("cuda" if torch.cuda.is_available() else "cpu")
         self.normalizer = normalizer if normalizer is not None else ObservationNormalizer(self.obs_dim, enabled=False)
         self.total_it = 0
 
-        self.actor = Actor(obs_dim, action_dim, max_action, hidden_dim).to(self.device)
-        self.actor_target = Actor(obs_dim, action_dim, max_action, hidden_dim).to(self.device)
-        self.critic_1 = Critic(obs_dim, action_dim, hidden_dim).to(self.device)
-        self.critic_2 = Critic(obs_dim, action_dim, hidden_dim).to(self.device)
-        self.critic_target_1 = Critic(obs_dim, action_dim, hidden_dim).to(self.device)
-        self.critic_target_2 = Critic(obs_dim, action_dim, hidden_dim).to(self.device)
+        sizes = hidden_sizes if hidden_sizes is not None else (64 if hidden_dim is None else hidden_dim)
+        self.actor = Actor(obs_dim, action_dim, max_action, hidden_sizes=sizes, activation=activation).to(self.device)
+        self.actor_target = Actor(obs_dim, action_dim, max_action, hidden_sizes=sizes, activation=activation).to(self.device)
+        self.critic_1 = Critic(obs_dim, action_dim, hidden_sizes=sizes, activation=activation).to(self.device)
+        self.critic_2 = Critic(obs_dim, action_dim, hidden_sizes=sizes, activation=activation).to(self.device)
+        self.critic_target_1 = Critic(obs_dim, action_dim, hidden_sizes=sizes, activation=activation).to(self.device)
+        self.critic_target_2 = Critic(obs_dim, action_dim, hidden_sizes=sizes, activation=activation).to(self.device)
 
         self.actor_target.load_state_dict(self.actor.state_dict())
         self.critic_target_1.load_state_dict(self.critic_1.state_dict())
@@ -86,7 +91,7 @@ class TD3Agent:
             action = action + np.random.normal(0.0, self.exploration_noise * self.max_action, size=self.action_dim)
         return self._clip_action_array(action)
 
-    def train(self, replay_buffer: ReplayBuffer, batch_size: int = 64) -> dict[str, float]:
+    def train(self, replay_buffer: ReplayBuffer, batch_size: int = 64) -> dict[str, float | None]:
         if len(replay_buffer) == 0:
             raise ValueError("replay buffer is empty")
         self.total_it += 1
@@ -123,7 +128,10 @@ class TD3Agent:
         metrics = {
             "critic_loss_1": float(critic_loss_1.detach().cpu().item()),
             "critic_loss_2": float(critic_loss_2.detach().cpu().item()),
-            "actor_loss": 0.0,
+            "critic_loss": float((critic_loss_1 + critic_loss_2).detach().cpu().item()),
+            "q1_mean": float(current_q1.detach().mean().cpu().item()),
+            "q2_mean": float(current_q2.detach().mean().cpu().item()),
+            "actor_loss": None,
         }
 
         if self.total_it % self.policy_delay == 0:
@@ -137,6 +145,10 @@ class TD3Agent:
 
         return metrics
 
+    def decay_exploration_noise(self, decay: float, minimum: float) -> float:
+        self.exploration_noise = max(float(minimum), self.exploration_noise * float(decay))
+        return self.exploration_noise
+
     def soft_update_targets(self) -> None:
         self._soft_update(self.actor, self.actor_target)
         self._soft_update(self.critic_1, self.critic_target_1)
@@ -146,7 +158,7 @@ class TD3Agent:
         for source_param, target_param in zip(source.parameters(), target.parameters()):
             target_param.data.copy_(self.tau * source_param.data + (1.0 - self.tau) * target_param.data)
 
-    def save(self, path: str | Path) -> None:
+    def save(self, path: str | Path, prefix: str = "td3") -> None:
         output_dir = Path(path)
         output_dir.mkdir(parents=True, exist_ok=True)
         torch.save(
@@ -157,7 +169,7 @@ class TD3Agent:
                 "normalizer": self.normalizer.state_dict(),
                 "params": self._params(),
             },
-            output_dir / "td3_actor.pt",
+            output_dir / f"{prefix}_actor.pt",
         )
         torch.save(
             {
@@ -170,13 +182,15 @@ class TD3Agent:
                 "total_it": self.total_it,
                 "params": self._params(),
             },
-            output_dir / "td3_critic.pt",
+            output_dir / f"{prefix}_critic.pt",
         )
 
-    def load(self, path: str | Path) -> None:
+    def load(self, path: str | Path, prefix: str = "td3", prefer_best: bool = False) -> None:
         input_dir = Path(path)
-        actor_state = torch.load(input_dir / "td3_actor.pt", map_location=self.device, weights_only=False)
-        critic_state = torch.load(input_dir / "td3_critic.pt", map_location=self.device, weights_only=False)
+        if prefer_best and (input_dir / "best_td3_actor.pt").exists() and (input_dir / "best_td3_critic.pt").exists():
+            prefix = "best_td3"
+        actor_state = torch.load(input_dir / f"{prefix}_actor.pt", map_location=self.device, weights_only=False)
+        critic_state = torch.load(input_dir / f"{prefix}_critic.pt", map_location=self.device, weights_only=False)
         self.actor.load_state_dict(actor_state["actor"])
         self.actor_target.load_state_dict(actor_state["actor_target"])
         self.actor_optimizer.load_state_dict(actor_state["actor_optimizer"])
@@ -202,5 +216,7 @@ class TD3Agent:
             "policy_delay": self.policy_delay,
             "exploration_noise": self.exploration_noise,
             "reward_scale": self.reward_scale,
+            "hidden_sizes": str(self.hidden_sizes),
+            "activation": self.activation,
             "device": str(self.device),
         }

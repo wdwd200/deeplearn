@@ -1,0 +1,8 @@
+run_id: 0
+td3:
+  actor_lr: 0.0001
+  critic_lr: 0.0001
+  exploration_noise: 0.05
+  policy_noise: 0.1
+best_eval_average_rate_e2e: 2479814.302498467
+output_dir: D:\转移\桌面\lunwencodex\results\phase3\sweep\run_00

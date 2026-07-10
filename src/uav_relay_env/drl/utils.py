@@ -3,7 +3,7 @@ from __future__ import annotations
 import json
 import random
 from pathlib import Path
-from typing import Any
+from typing import Any, Mapping
 
 import numpy as np
 import torch
@@ -32,11 +32,29 @@ def load_yaml(path: str | Path) -> dict[str, Any]:
     try:
         import yaml  # type: ignore
     except ImportError:
-        return json.loads(text)
+        try:
+            data = json.loads(text)
+        except json.JSONDecodeError:
+            from uav_relay_env.config import _parse_simple_yaml
+
+            data = _parse_simple_yaml(text)
+        if not isinstance(data, dict):
+            raise ValueError(f"{path} must contain a mapping")
+        return data
     data = yaml.safe_load(text)
     if not isinstance(data, dict):
         raise ValueError(f"{path} must contain a mapping")
     return data
+
+
+def deep_update(base: dict[str, Any], updates: Mapping[str, Any]) -> dict[str, Any]:
+    result = dict(base)
+    for key, value in updates.items():
+        if isinstance(value, Mapping) and isinstance(result.get(key), dict):
+            result[key] = deep_update(result[key], value)
+        else:
+            result[key] = value
+    return result
 
 
 def moving_average(values: list[float], window: int) -> list[float]:

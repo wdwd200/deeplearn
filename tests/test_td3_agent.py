@@ -36,6 +36,10 @@ def test_td3_agent_train_runs_once_with_enough_samples():
     metrics = agent.train(buffer, batch_size=16)
 
     assert "critic_loss_1" in metrics
+    assert "critic_loss" in metrics
+    assert "actor_loss" in metrics
+    assert "q1_mean" in metrics
+    assert "q2_mean" in metrics
     assert np.isfinite(metrics["critic_loss_1"])
 
 
@@ -62,6 +66,50 @@ def test_td3_agent_save_and_load(tmp_path):
     obs, _ = env.reset()
 
     assert np.isfinite(loaded.select_action(obs)).all()
+
+
+def test_td3_agent_best_model_save_and_load(tmp_path):
+    env = UAVRelayCommEnv()
+    agent = TD3Agent(env.observation_dim, env.action_dim, env.config.mobility.max_speed_mps, device="cpu")
+    agent.save(tmp_path, prefix="best_td3")
+
+    loaded = TD3Agent(env.observation_dim, env.action_dim, env.config.mobility.max_speed_mps, device="cpu")
+    loaded.load(tmp_path, prefer_best=True)
+    obs, _ = env.reset()
+
+    assert np.isfinite(loaded.select_action(obs)).all()
+
+
+def test_td3_exploration_noise_decay_respects_minimum():
+    env = UAVRelayCommEnv()
+    agent = TD3Agent(env.observation_dim, env.action_dim, env.config.mobility.max_speed_mps, exploration_noise=0.1, device="cpu")
+
+    for _ in range(20):
+        noise = agent.decay_exploration_noise(decay=0.5, minimum=0.02)
+
+    assert noise == 0.02
+
+
+def test_select_action_with_noise_is_finite():
+    env = UAVRelayCommEnv()
+    agent = TD3Agent(env.observation_dim, env.action_dim, env.config.mobility.max_speed_mps, device="cpu")
+    obs, _ = env.reset()
+
+    action = agent.select_action(obs, noise=True)
+
+    assert np.isfinite(action).all()
+
+
+def test_soft_update_still_works_after_train_step():
+    env = UAVRelayCommEnv()
+    agent = TD3Agent(env.observation_dim, env.action_dim, env.config.mobility.max_speed_mps, device="cpu")
+    buffer = _filled_buffer(env.observation_dim, env.action_dim, env.config.mobility.max_speed_mps)
+
+    agent.train(buffer, batch_size=16)
+    agent.soft_update_targets()
+
+    obs, _ = env.reset()
+    assert np.isfinite(agent.select_action(obs)).all()
 
 
 def test_td3_agent_does_not_break_env_reset_step_interface():

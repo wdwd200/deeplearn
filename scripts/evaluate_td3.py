@@ -100,7 +100,7 @@ def evaluate_td3() -> dict[str, Any]:
         max_action=config.mobility.max_speed_mps,
         normalizer=ObservationNormalizer(env.observation_dim, enabled=True),
     )
-    agent.load(RESULTS_DIR)
+    agent.load(RESULTS_DIR, prefer_best=True)
 
     observation, info = env.reset(seed=101)
     metrics = EpisodeMetrics()
