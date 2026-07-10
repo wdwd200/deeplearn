@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import ast
 from dataclasses import dataclass, field
 import json
 import math
@@ -38,6 +39,13 @@ def _optional_mapping(data: Mapping[str, Any], key: str) -> Mapping[str, Any]:
     if not isinstance(value, Mapping):
         raise ValueError(f"{key} must be a mapping")
     return value
+
+
+def _merge_mappings(*mappings: Mapping[str, Any]) -> dict[str, Any]:
+    merged: dict[str, Any] = {}
+    for mapping in mappings:
+        merged.update(mapping)
+    return merged
 
 
 def _range_pair(value: Sequence[Any], name: str) -> Tuple[float, float]:
@@ -213,11 +221,43 @@ class EnvConfig:
         if not data:
             config = cls()
         else:
+            scenario_data = (
+                _optional_mapping(data, "scenario")
+                if "scenario" in data
+                else _optional_mapping(data, "uavs")
+            )
+            mobility_data = (
+                _optional_mapping(data, "mobility")
+                if "mobility" in data
+                else _merge_mappings(
+                    _optional_mapping(data, "simulation"),
+                    _optional_mapping(data, "environment"),
+                    {"bounds_m": _optional_mapping(data, "area").get("bounds_m", {})},
+                )
+            )
+            if "channel" in data:
+                channel_data = _optional_mapping(data, "channel")
+            else:
+                communication_data = _optional_mapping(data, "communication")
+                antenna_data = _optional_mapping(data, "antenna")
+                channel_data = _merge_mappings(
+                    communication_data,
+                    {
+                        "antenna_model": antenna_data.get("model", antenna_data.get("antenna_model", "dipole")),
+                        "g_max": antenna_data.get("g_max", ChannelConfig.g_max),
+                        "g_min": antenna_data.get("g_min", ChannelConfig.g_min),
+                    },
+                )
+            rate_data = (
+                _optional_mapping(data, "rate")
+                if "rate" in data
+                else _optional_mapping(data, "communication")
+            )
             config = cls(
-                scenario=ScenarioConfig.from_mapping(_optional_mapping(data, "scenario")),
-                mobility=MobilityConfig.from_mapping(_optional_mapping(data, "mobility")),
-                channel=ChannelConfig.from_mapping(_optional_mapping(data, "channel")),
-                rate=RateConfig.from_mapping(_optional_mapping(data, "rate")),
+                scenario=ScenarioConfig.from_mapping(scenario_data),
+                mobility=MobilityConfig.from_mapping(mobility_data),
+                channel=ChannelConfig.from_mapping(channel_data),
+                rate=RateConfig.from_mapping(rate_data),
                 reward=RewardConfig.from_mapping(_optional_mapping(data, "reward")),
             )
         config.validate()
@@ -257,12 +297,115 @@ def _read_config_mapping(path: Path) -> Mapping[str, Any]:
     try:
         import yaml  # type: ignore
     except ImportError:
-        data = json.loads(text)
+        try:
+            data = json.loads(text)
+        except json.JSONDecodeError:
+            data = _parse_simple_yaml(text)
     else:
         data = yaml.safe_load(text)
     if not isinstance(data, Mapping):
         raise ValueError(f"{path} must contain a mapping")
     return data
+
+
+def _parse_simple_yaml(text: str) -> Mapping[str, Any]:
+    lines: list[tuple[int, str]] = []
+    for raw_line in text.splitlines():
+        without_comment = raw_line.split("#", 1)[0].rstrip()
+        if not without_comment.strip():
+            continue
+        indent = len(without_comment) - len(without_comment.lstrip(" "))
+        lines.append((indent, without_comment.strip()))
+
+    if not lines:
+        return {}
+    parsed, index = _parse_yaml_block(lines, 0, lines[0][0])
+    if index != len(lines):
+        raise ValueError("could not parse full YAML config")
+    if not isinstance(parsed, Mapping):
+        raise ValueError("YAML config must contain a mapping")
+    return parsed
+
+
+def _parse_yaml_block(lines: list[tuple[int, str]], index: int, indent: int) -> tuple[Any, int]:
+    if index >= len(lines):
+        return {}, index
+    current_indent, current_text = lines[index]
+    if current_indent != indent:
+        raise ValueError("inconsistent YAML indentation")
+    if current_text.startswith("- "):
+        return _parse_yaml_list(lines, index, indent)
+    return _parse_yaml_mapping(lines, index, indent)
+
+
+def _parse_yaml_mapping(lines: list[tuple[int, str]], index: int, indent: int) -> tuple[dict[str, Any], int]:
+    result: dict[str, Any] = {}
+    while index < len(lines):
+        line_indent, text = lines[index]
+        if line_indent < indent:
+            break
+        if line_indent > indent:
+            raise ValueError("unexpected nested YAML mapping")
+        if text.startswith("- "):
+            break
+        key, separator, raw_value = text.partition(":")
+        if not separator:
+            raise ValueError(f"invalid YAML mapping entry: {text}")
+        key = key.strip()
+        raw_value = raw_value.strip()
+        index += 1
+        if raw_value:
+            result[key] = _parse_yaml_scalar(raw_value)
+        elif index < len(lines) and lines[index][0] > indent:
+            result[key], index = _parse_yaml_block(lines, index, lines[index][0])
+        else:
+            result[key] = {}
+    return result, index
+
+
+def _parse_yaml_list(lines: list[tuple[int, str]], index: int, indent: int) -> tuple[list[Any], int]:
+    result: list[Any] = []
+    while index < len(lines):
+        line_indent, text = lines[index]
+        if line_indent < indent:
+            break
+        if line_indent > indent:
+            raise ValueError("unexpected nested YAML list")
+        if not text.startswith("- "):
+            break
+        raw_value = text[2:].strip()
+        index += 1
+        if raw_value:
+            result.append(_parse_yaml_scalar(raw_value))
+        elif index < len(lines) and lines[index][0] > indent:
+            value, index = _parse_yaml_block(lines, index, lines[index][0])
+            result.append(value)
+        else:
+            result.append(None)
+    return result, index
+
+
+def _parse_yaml_scalar(value: str) -> Any:
+    lowered = value.lower()
+    if lowered == "true":
+        return True
+    if lowered == "false":
+        return False
+    if lowered in {"null", "none", "~"}:
+        return None
+    if (value.startswith('"') and value.endswith('"')) or (value.startswith("'") and value.endswith("'")):
+        return value[1:-1]
+    if value.startswith("[") or value.startswith("{"):
+        try:
+            return json.loads(value)
+        except json.JSONDecodeError:
+            return ast.literal_eval(value)
+    try:
+        if any(marker in value for marker in (".", "e", "E")):
+            return float(value)
+        return int(value)
+    except ValueError:
+        return value
 
 
 def load_config(path: str | Path | None = None) -> EnvConfig:

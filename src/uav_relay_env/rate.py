@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import math
 
-
 def snr(transmit_power_w: float, channel_gain: float, noise_power_w: float) -> float:
     if noise_power_w <= 0.0:
         raise ValueError("noise_power_w must be positive")

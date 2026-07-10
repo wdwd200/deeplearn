@@ -38,7 +38,7 @@ def _check_info(info: dict[str, Any]) -> None:
         raise RuntimeError(f"missing info keys: {sorted(missing)}")
 
 
-def run_random_episode(seed: int = 7, verbose: bool = True) -> dict[str, float | int]:
+def run_random_episode(seed: int = 7, verbose: bool = True) -> dict[str, float | int | list[float]]:
     config = load_config(ROOT / "configs" / "comm_env_default.yaml")
     rng = random.Random(seed)
     env = UAVRelayCommEnv(config=config)
@@ -69,17 +69,18 @@ def run_random_episode(seed: int = 7, verbose: bool = True) -> dict[str, float |
 
     summary = metrics.summary()
     if verbose:
-        print(
-            "summary steps={steps} avg_rate_e2e={avg:.3f}Mbps "
-            "min_rate_e2e={min_rate:.3f}Mbps max_rate_e2e={max_rate:.3f}Mbps "
-            "constraint_violations={violations}".format(
-                steps=summary["steps"],
-                avg=summary["avg_rate_e2e_bps"] / 1e6,
-                min_rate=summary["min_rate_e2e_bps"] / 1e6,
-                max_rate=summary["max_rate_e2e_bps"] / 1e6,
-                violations=summary["constraint_violations"],
-            )
-        )
+        final_q_r = summary["final_q_R"]
+        print("episode length: {value}".format(value=summary["episode_length"]))
+        print("total reward: {value:.6f}".format(value=summary["total_reward"]))
+        print("average rate_e2e: {value:.6f} Mbps".format(value=summary["avg_rate_e2e_bps"] / 1e6))
+        print("average rate_HR: {value:.6f} Mbps".format(value=summary["avg_rate_HR_bps"] / 1e6))
+        print("average rate_RL: {value:.6f} Mbps".format(value=summary["avg_rate_RL_bps"] / 1e6))
+        print("average snr_HR: {value:.6f}".format(value=summary["avg_snr_HR"]))
+        print("average snr_RL: {value:.6f}".format(value=summary["avg_snr_RL"]))
+        print("outage count: {value}".format(value=summary["outage_count"]))
+        print("constraint violation count: {value}".format(value=summary["constraint_violation_count"]))
+        print("trajectory length: {value}".format(value=summary["trajectory_length"]))
+        print("final q_R: {value}".format(value=final_q_r))
     return summary
 
 
