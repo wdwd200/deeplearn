@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import sys
+import math
 from collections import defaultdict
 from pathlib import Path
 from typing import Any, Mapping
@@ -27,6 +28,7 @@ from phase5_common import (  # noqa: E402
     PHASE4_ROOT,
     PHASE5_FIGURES,
     PHASE5_SOURCE_DATA,
+    assert_clean_phase5_generation,
     ensure_phase5_dirs,
     load_yaml,
     official_metadata_values,
@@ -49,6 +51,11 @@ COLORS = {
     "GreedyRatePolicy": "#e6ab02",
     "BalancedLinkPolicy": "#1f78b4",
 }
+FIGURE_1_ANNOTATION_LABELS = ("d_HR", "d_RL", "theta_HR", "theta_RL")
+
+
+def figure_1_annotation_labels() -> tuple[str, ...]:
+    return FIGURE_1_ANNOTATION_LABELS
 
 
 def _with_trace_metadata(rows: list[dict[str, Any]], source_file: str) -> list[dict[str, Any]]:
@@ -99,6 +106,8 @@ def _figure_1_system_model() -> list[Path]:
     ax.scatter(*q_l, marker="s", s=70, color="#e41a1c", label="Low UAV L")
     ax.plot([q_h[0], q_r[0]], [q_h[1], q_r[1]], [q_h[2], q_r[2]], color="#377eb8", label="H-R link")
     ax.plot([q_r[0], q_l[0]], [q_r[1], q_l[1]], [q_r[2], q_l[2]], color="#e41a1c", label="R-L link")
+    _annotate_link_geometry(ax, q_r, q_h, "$d_{HR}$", "$\\theta_{HR}$", "#377eb8", text_offset=(20.0, -35.0, 35.0))
+    _annotate_link_geometry(ax, q_l, q_r, "$d_{RL}$", "$\\theta_{RL}$", "#e41a1c", text_offset=(-65.0, 30.0, 20.0))
     _draw_bounds(ax, bounds)
     ax.text(*q_h, " H")
     ax.text(*q_r, " R")
@@ -109,6 +118,72 @@ def _figure_1_system_model() -> list[Path]:
     ax.set_title("System model and relay flight region")
     ax.legend(loc="upper left", fontsize=7)
     return _save(fig, "figure_1_system_model")
+
+
+def _annotate_link_geometry(
+    ax: Any,
+    anchor: list[float],
+    target: list[float],
+    distance_label: str,
+    theta_label: str,
+    color: str,
+    text_offset: tuple[float, float, float],
+) -> None:
+    ax.text(
+        0.5 * (anchor[0] + target[0]) + text_offset[0],
+        0.5 * (anchor[1] + target[1]) + text_offset[1],
+        0.5 * (anchor[2] + target[2]) + text_offset[2],
+        distance_label,
+        color=color,
+        fontsize=9,
+    )
+    horizontal_end = [target[0], target[1], anchor[2]]
+    ax.plot(
+        [anchor[0], horizontal_end[0]],
+        [anchor[1], horizontal_end[1]],
+        [anchor[2], horizontal_end[2]],
+        color=color,
+        linestyle=":",
+        linewidth=1.0,
+        alpha=0.75,
+    )
+    arc = _elevation_arc_points(anchor, target)
+    ax.plot(
+        [point[0] for point in arc],
+        [point[1] for point in arc],
+        [point[2] for point in arc],
+        color=color,
+        linewidth=1.2,
+    )
+    label_point = arc[max(0, min(len(arc) - 1, len(arc) // 2))]
+    ax.text(label_point[0] + 8.0, label_point[1] + 8.0, label_point[2] + 8.0, theta_label, color=color, fontsize=9)
+
+
+def _elevation_arc_points(anchor: list[float], target: list[float], radius: float = 85.0) -> list[tuple[float, float, float]]:
+    dx = float(target[0]) - float(anchor[0])
+    dy = float(target[1]) - float(anchor[1])
+    dz = float(target[2]) - float(anchor[2])
+    rho = math.hypot(dx, dy)
+    theta = math.atan2(abs(dz), rho)
+    if rho == 0.0:
+        horizontal_unit = (1.0, 0.0, 0.0)
+    else:
+        horizontal_unit = (dx / rho, dy / rho, 0.0)
+    vertical_sign = 1.0 if dz >= 0.0 else -1.0
+    steps = 24
+    points: list[tuple[float, float, float]] = []
+    for index in range(steps + 1):
+        angle = theta * index / steps
+        horizontal_scale = math.cos(angle) * radius
+        vertical_scale = math.sin(angle) * radius * vertical_sign
+        points.append(
+            (
+                float(anchor[0]) + horizontal_unit[0] * horizontal_scale,
+                float(anchor[1]) + horizontal_unit[1] * horizontal_scale,
+                float(anchor[2]) + vertical_scale,
+            )
+        )
+    return points
 
 
 def _draw_bounds(ax: Any, bounds: Mapping[str, list[float]]) -> None:
@@ -342,4 +417,5 @@ def plot_paper_figures() -> list[Path]:
 
 
 if __name__ == "__main__":
+    assert_clean_phase5_generation()
     plot_paper_figures()

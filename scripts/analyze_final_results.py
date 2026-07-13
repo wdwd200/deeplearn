@@ -15,6 +15,7 @@ from phase5_common import (  # noqa: E402
     BASELINE_METHODS,
     DRL_METHODS,
     PHASE5_ANALYSIS,
+    assert_clean_phase5_generation,
     ensure_phase5_dirs,
     group_rows,
     mean,
@@ -165,4 +166,5 @@ def analyze_final_results() -> list[Path]:
 
 
 if __name__ == "__main__":
+    assert_clean_phase5_generation()
     analyze_final_results()

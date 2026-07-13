@@ -4,7 +4,7 @@
 
 | No. | File | Title | Data source | X axis | Y axis | Error bars | Suggested section | Main point | Notes |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| Figure 1 | `figure_1_system_model.png/.pdf` | System model and relay flight region | `configs/comm_env_default.yaml` | x (m) | y/z (m) | none | System model | Shows H, R, L, links, and relay flight region | Schematic only; not a new physical model |
+| Figure 1 | `figure_1_system_model.png/.pdf` | System model, link geometry, and relay flight region | `configs/comm_env_default.yaml` | x (m) | y/z (m) | none | System model | Shows H, R, L UAVs, H-R and R-L two-hop links, `d_HR`, `d_RL`, `theta_HR`, `theta_RL`, and relay flight region | Schematic only; distance and elevation annotations come from the existing model geometry |
 | Figure 2 | `figure_2_modeling_pipeline.png/.pdf` | Modeling and training pipeline | communication model and scripts | pipeline stage | not applicable | none | Method | Shows position-to-reward-to-action loop | No experimental metric plotted |
 | Figure 3 | `figure_3_training_curves.png/.pdf` | Training reward curves | `results/phase4/algorithms/*/training_log.csv` | episode | episode reward | seed standard deviation | Training results | SAC is more stable in current runs | No smoothing is applied |
 | Figure 4 | `figure_4_algorithm_rate_comparison.png/.pdf` | Algorithm and baseline rate comparison | `results/phase4/algorithm_summary.csv` | method | average end-to-end rate (Mbps) | DRL seed x scenario std; baseline scenario std | Main results | SAC is highest; BalancedLinkPolicy is the best baseline | Do not claim significance |

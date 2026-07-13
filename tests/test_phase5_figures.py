@@ -11,7 +11,7 @@ if str(SCRIPTS) not in sys.path:
     sys.path.insert(0, str(SCRIPTS))
 
 from phase5_common import PHASE4_ROOT, PHASE5_FIGURES, PHASE5_SOURCE_DATA  # noqa: E402
-from plot_paper_figures import plot_paper_figures  # noqa: E402
+from plot_paper_figures import figure_1_annotation_labels, plot_paper_figures  # noqa: E402
 
 EXPECTED_FIGURES = [
     "figure_1_system_model",
@@ -58,6 +58,12 @@ def test_png_dpi_is_at_least_600() -> None:
         with Image.open(png_path) as image:
             dpi = image.info.get("dpi", (0.0, 0.0))[0]
         assert dpi >= 599.0
+
+
+def test_figure_1_generation_config_contains_link_geometry_labels() -> None:
+    labels = set(figure_1_annotation_labels())
+
+    assert {"d_HR", "d_RL", "theta_HR", "theta_RL"}.issubset(labels)
 
 
 def test_figure_source_data_exists() -> None:

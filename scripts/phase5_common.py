@@ -117,6 +117,29 @@ ABLATION_SUMMARY_REQUIRED_FIELDS = (
     "difference_from_full_td3",
 )
 
+PHASE5_SOURCE_HASH_PATHS = (
+    "scripts/phase5_common.py",
+    "scripts/validate_final_results.py",
+    "scripts/build_paper_tables.py",
+    "scripts/plot_paper_figures.py",
+    "scripts/analyze_final_results.py",
+    "scripts/build_reproducibility_manifest.py",
+    "configs/comm_env_default.yaml",
+    "configs/phase4_experiments.yaml",
+    "configs/phase4_eval_scenarios.yaml",
+    "configs/td3_default.yaml",
+    "configs/ddpg_default.yaml",
+    "configs/sac_default.yaml",
+)
+PHASE5_REQUIRED_SCRIPT_PATHS = (
+    "scripts/validate_final_results.py",
+    "scripts/build_paper_tables.py",
+    "scripts/plot_paper_figures.py",
+    "scripts/analyze_final_results.py",
+    "scripts/build_reproducibility_manifest.py",
+)
+PHASE5_IGNORED_GENERATED_PREFIXES = ("results/phase5/",)
+
 
 def ensure_phase5_dirs() -> None:
     for path in (PHASE5_TABLES, PHASE5_FIGURES, PHASE5_ANALYSIS, PHASE5_MANIFESTS, PHASE5_SOURCE_DATA):
@@ -215,6 +238,117 @@ def required_fields_present(rows: Sequence[Mapping[str, Any]], fields: Sequence[
 
 def rel(path: Path | str) -> str:
     return relative_path(path).replace("\\", "/")
+
+
+def run_git(args: Sequence[str]) -> str:
+    result = subprocess.run(
+        ["git", *args],
+        cwd=ROOT,
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+    return result.stdout.strip()
+
+
+def git_status_porcelain() -> str:
+    try:
+        return run_git(["status", "--porcelain"])
+    except (OSError, subprocess.CalledProcessError):
+        return ""
+
+
+def _status_line_path(line: str) -> str:
+    normalized = line.strip().strip('"').replace("\\", "/")
+    for marker in ("results/", "scripts/", "configs/", "tests/", "docs/", "src/"):
+        index = normalized.find(marker)
+        if index >= 0:
+            return normalized[index:]
+    return normalized[3:].strip().strip('"') if len(normalized) >= 3 else normalized
+
+
+def filter_phase5_generated_status(status_output: str) -> str:
+    lines: list[str] = []
+    for line in status_output.splitlines():
+        path = _status_line_path(line)
+        if any(path.startswith(prefix) for prefix in PHASE5_IGNORED_GENERATED_PREFIXES):
+            continue
+        lines.append(line)
+    return "\n".join(lines)
+
+
+def current_phase5_git_dirty() -> bool:
+    return bool(filter_phase5_generated_status(git_status_porcelain()).strip())
+
+
+def assert_clean_phase5_generation() -> bool:
+    dirty = current_phase5_git_dirty()
+    if dirty:
+        raise RuntimeError(
+            "Phase 5 formal results must be generated from a committed and clean code version. "
+            "Please commit code first, then rerun."
+        )
+    return dirty
+
+
+def iter_phase5_source_hash_files(
+    paths: Sequence[str | Path] = PHASE5_SOURCE_HASH_PATHS,
+    root: Path = ROOT,
+) -> list[Path]:
+    files: list[Path] = []
+    for raw_path in paths:
+        path = root / raw_path
+        if path.is_dir():
+            files.extend(
+                candidate
+                for candidate in path.rglob("*")
+                if candidate.is_file()
+                and "__pycache__" not in candidate.parts
+                and candidate.suffix in {".py", ".yaml", ".yml", ".json"}
+            )
+        elif path.is_file():
+            files.append(path)
+        else:
+            raise FileNotFoundError(path)
+    return sorted(
+        set(files),
+        key=lambda candidate: str(candidate.resolve().relative_to(root.resolve())).replace("\\", "/"),
+    )
+
+
+def compute_phase5_source_code_hash(
+    paths: Sequence[str | Path] = PHASE5_SOURCE_HASH_PATHS,
+    root: Path = ROOT,
+) -> str:
+    digest = hashlib.sha256()
+    for path in iter_phase5_source_hash_files(paths, root=root):
+        rel_path = str(path.resolve().relative_to(root.resolve())).replace("\\", "/")
+        digest.update(rel_path.encode("utf-8"))
+        digest.update(b"\0")
+        digest.update(path.read_bytes())
+        digest.update(b"\0")
+    return digest.hexdigest()
+
+
+def git_commit_exists(commit: str) -> bool:
+    try:
+        run_git(["rev-parse", "--verify", f"{commit}^{{commit}}"])
+    except (OSError, subprocess.CalledProcessError):
+        return False
+    return True
+
+
+def git_tree_files(commit: str) -> set[str]:
+    output = run_git(["ls-tree", "-r", "--name-only", commit])
+    return {line.strip().replace("\\", "/") for line in output.splitlines() if line.strip()}
+
+
+def validate_phase5_commit_contains_scripts(commit: str) -> list[str]:
+    if not git_commit_exists(commit):
+        return [f"commit does not exist: {commit}"]
+    files = git_tree_files(commit)
+    missing = [path for path in PHASE5_REQUIRED_SCRIPT_PATHS if path not in files]
+    return [f"missing from {commit}: {path}" for path in missing]
 
 
 def is_relative_recorded_path(value: Any) -> bool:

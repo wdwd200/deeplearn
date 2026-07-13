@@ -20,6 +20,7 @@ from phase5_common import (  # noqa: E402
     DRL_METHODS,
     PHASE4_CONFIG_PATH,
     PHASE5_TABLES,
+    assert_clean_phase5_generation,
     ensure_phase5_dirs,
     load_yaml,
     read_csv_rows,
@@ -198,4 +199,5 @@ def build_paper_tables() -> list[Path]:
 
 
 if __name__ == "__main__":
+    assert_clean_phase5_generation()
     build_paper_tables()
