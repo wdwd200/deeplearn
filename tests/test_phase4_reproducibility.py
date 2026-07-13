@@ -162,7 +162,7 @@ def test_git_dirty_detection_from_status_output():
 
 
 def test_generated_phase4_results_do_not_block_formal_pipeline_status_filter():
-    status = " M results/phase4/algorithm_summary.csv\n M scripts/phase4_common.py\n"
+    status = "M results/phase4/algorithm_training_summary.csv\n M results/phase4/algorithm_summary.csv\n M scripts/phase4_common.py\n"
 
     filtered = filter_generated_result_status(status)
 

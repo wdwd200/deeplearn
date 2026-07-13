@@ -195,7 +195,12 @@ def git_status_porcelain() -> str:
 
 
 def _status_line_path(line: str) -> str:
-    return line[3:].strip().strip('"').replace("\\", "/") if len(line) >= 3 else line.strip()
+    normalized = line.strip().strip('"').replace("\\", "/")
+    for marker in ("results/", "src/", "scripts/", "configs/", "tests/", "docs/"):
+        index = normalized.find(marker)
+        if index >= 0:
+            return normalized[index:]
+    return normalized[3:].strip().strip('"') if len(normalized) >= 3 else normalized
 
 
 def filter_generated_result_status(status_output: str) -> str:
