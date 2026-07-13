@@ -29,6 +29,7 @@ COMM_CONFIG_PATH = ROOT / "configs" / "comm_env_default.yaml"
 EVAL_SCENARIOS_PATH = ROOT / "configs" / "phase4_eval_scenarios.yaml"
 PHASE4_CONFIG_PATH = ROOT / "configs" / "phase4_experiments.yaml"
 ALGORITHMS = ("td3", "ddpg", "sac")
+GENERATED_RESULT_PREFIXES = ("results/phase4/",)
 SOURCE_HASH_PATHS = [
     "src/uav_relay_env/drl",
     "src/uav_relay_env/comm_env.py",
@@ -193,6 +194,20 @@ def git_status_porcelain() -> str:
         return ""
 
 
+def _status_line_path(line: str) -> str:
+    return line[3:].strip().strip('"').replace("\\", "/") if len(line) >= 3 else line.strip()
+
+
+def filter_generated_result_status(status_output: str) -> str:
+    lines = []
+    for line in status_output.splitlines():
+        path = _status_line_path(line)
+        if any(path.startswith(prefix) for prefix in GENERATED_RESULT_PREFIXES):
+            continue
+        lines.append(line)
+    return "\n".join(lines)
+
+
 def git_dirty_from_status(status_output: str) -> bool:
     return bool(status_output.strip())
 
@@ -202,7 +217,7 @@ def current_git_dirty() -> bool:
 
 
 def assert_clean_git_worktree(allow_dirty: bool = False) -> bool:
-    dirty = current_git_dirty()
+    dirty = git_dirty_from_status(filter_generated_result_status(git_status_porcelain()))
     if dirty and not allow_dirty:
         raise RuntimeError("official training requires a clean Git worktree; commit code first or use --allow-dirty for debugging")
     return dirty

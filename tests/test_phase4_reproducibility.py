@@ -14,6 +14,7 @@ from phase4_common import (
     compute_source_code_hash,
     env_config_from_overrides,
     evaluate_saved_agent,
+    filter_generated_result_status,
     git_dirty_from_status,
     is_official_result_dir,
     load_phase4_config,
@@ -158,6 +159,15 @@ def test_git_dirty_detection_from_status_output():
     assert git_dirty_from_status("") is False
     assert git_dirty_from_status(" M scripts/phase4_common.py\n") is True
     assert git_dirty_from_status("?? AGENTS.md\n") is True
+
+
+def test_generated_phase4_results_do_not_block_formal_pipeline_status_filter():
+    status = " M results/phase4/algorithm_summary.csv\n M scripts/phase4_common.py\n"
+
+    filtered = filter_generated_result_status(status)
+
+    assert "results/phase4" not in filtered
+    assert "scripts/phase4_common.py" in filtered
 
 
 def test_assert_clean_git_worktree_rejects_dirty(monkeypatch):
