@@ -1,0 +1,520 @@
+{
+  "ablation_result_files": [
+    "results/phase4/ablations/A0_full_td3/seed_0/training_params.json",
+    "results/phase4/ablations/A0_full_td3/seed_1/training_params.json",
+    "results/phase4/ablations/A0_full_td3/seed_2/training_params.json",
+    "results/phase4/ablations/A1_isotropic_antenna/seed_0/training_params.json",
+    "results/phase4/ablations/A1_isotropic_antenna/seed_1/training_params.json",
+    "results/phase4/ablations/A1_isotropic_antenna/seed_2/training_params.json",
+    "results/phase4/ablations/A2_no_balance_penalty/seed_0/training_params.json",
+    "results/phase4/ablations/A2_no_balance_penalty/seed_1/training_params.json",
+    "results/phase4/ablations/A2_no_balance_penalty/seed_2/training_params.json",
+    "results/phase4/ablations/A3_no_energy_penalty/seed_0/training_params.json",
+    "results/phase4/ablations/A3_no_energy_penalty/seed_1/training_params.json",
+    "results/phase4/ablations/A3_no_energy_penalty/seed_2/training_params.json",
+    "results/phase4/ablations/A4_fixed_relay_height/seed_0/training_params.json",
+    "results/phase4/ablations/A4_fixed_relay_height/seed_1/training_params.json",
+    "results/phase4/ablations/A4_fixed_relay_height/seed_2/training_params.json",
+    "results/phase4/ablations/A0_full_td3/seed_0/eval_log.csv",
+    "results/phase4/ablations/A0_full_td3/seed_0/training_log.csv",
+    "results/phase4/ablations/A0_full_td3/seed_1/eval_log.csv",
+    "results/phase4/ablations/A0_full_td3/seed_1/training_log.csv",
+    "results/phase4/ablations/A0_full_td3/seed_2/eval_log.csv",
+    "results/phase4/ablations/A0_full_td3/seed_2/training_log.csv",
+    "results/phase4/ablations/A1_isotropic_antenna/seed_0/eval_log.csv",
+    "results/phase4/ablations/A1_isotropic_antenna/seed_0/training_log.csv",
+    "results/phase4/ablations/A1_isotropic_antenna/seed_1/eval_log.csv",
+    "results/phase4/ablations/A1_isotropic_antenna/seed_1/training_log.csv",
+    "results/phase4/ablations/A1_isotropic_antenna/seed_2/eval_log.csv",
+    "results/phase4/ablations/A1_isotropic_antenna/seed_2/training_log.csv",
+    "results/phase4/ablations/A2_no_balance_penalty/seed_0/eval_log.csv",
+    "results/phase4/ablations/A2_no_balance_penalty/seed_0/training_log.csv",
+    "results/phase4/ablations/A2_no_balance_penalty/seed_1/eval_log.csv",
+    "results/phase4/ablations/A2_no_balance_penalty/seed_1/training_log.csv",
+    "results/phase4/ablations/A2_no_balance_penalty/seed_2/eval_log.csv",
+    "results/phase4/ablations/A2_no_balance_penalty/seed_2/training_log.csv",
+    "results/phase4/ablations/A3_no_energy_penalty/seed_0/eval_log.csv",
+    "results/phase4/ablations/A3_no_energy_penalty/seed_0/training_log.csv",
+    "results/phase4/ablations/A3_no_energy_penalty/seed_1/eval_log.csv",
+    "results/phase4/ablations/A3_no_energy_penalty/seed_1/training_log.csv",
+    "results/phase4/ablations/A3_no_energy_penalty/seed_2/eval_log.csv",
+    "results/phase4/ablations/A3_no_energy_penalty/seed_2/training_log.csv",
+    "results/phase4/ablations/A4_fixed_relay_height/seed_0/eval_log.csv",
+    "results/phase4/ablations/A4_fixed_relay_height/seed_0/training_log.csv",
+    "results/phase4/ablations/A4_fixed_relay_height/seed_1/eval_log.csv",
+    "results/phase4/ablations/A4_fixed_relay_height/seed_1/training_log.csv",
+    "results/phase4/ablations/A4_fixed_relay_height/seed_2/eval_log.csv",
+    "results/phase4/ablations/A4_fixed_relay_height/seed_2/training_log.csv",
+    "results/phase4/ablations/ablation_results.csv",
+    "results/phase4/ablations/ablation_summary.csv"
+  ],
+  "algorithm_result_files": [
+    "results/phase4/algorithms/ddpg/seed_0/training_params.json",
+    "results/phase4/algorithms/ddpg/seed_1/training_params.json",
+    "results/phase4/algorithms/ddpg/seed_2/training_params.json",
+    "results/phase4/algorithms/sac/seed_0/training_params.json",
+    "results/phase4/algorithms/sac/seed_1/training_params.json",
+    "results/phase4/algorithms/sac/seed_2/training_params.json",
+    "results/phase4/algorithms/td3/seed_0/training_params.json",
+    "results/phase4/algorithms/td3/seed_1/training_params.json",
+    "results/phase4/algorithms/td3/seed_2/training_params.json",
+    "results/phase4/algorithms/ddpg/seed_0/eval_log.csv",
+    "results/phase4/algorithms/ddpg/seed_0/training_log.csv",
+    "results/phase4/algorithms/ddpg/seed_1/eval_log.csv",
+    "results/phase4/algorithms/ddpg/seed_1/training_log.csv",
+    "results/phase4/algorithms/ddpg/seed_2/eval_log.csv",
+    "results/phase4/algorithms/ddpg/seed_2/training_log.csv",
+    "results/phase4/algorithms/sac/seed_0/eval_log.csv",
+    "results/phase4/algorithms/sac/seed_0/training_log.csv",
+    "results/phase4/algorithms/sac/seed_1/eval_log.csv",
+    "results/phase4/algorithms/sac/seed_1/training_log.csv",
+    "results/phase4/algorithms/sac/seed_2/eval_log.csv",
+    "results/phase4/algorithms/sac/seed_2/training_log.csv",
+    "results/phase4/algorithms/td3/seed_0/eval_log.csv",
+    "results/phase4/algorithms/td3/seed_0/training_log.csv",
+    "results/phase4/algorithms/td3/seed_1/eval_log.csv",
+    "results/phase4/algorithms/td3/seed_1/training_log.csv",
+    "results/phase4/algorithms/td3/seed_2/eval_log.csv",
+    "results/phase4/algorithms/td3/seed_2/training_log.csv"
+  ],
+  "config_files": [
+    "configs/comm_env_default.yaml",
+    "configs/phase4_experiments.yaml",
+    "configs/phase4_eval_scenarios.yaml"
+  ],
+  "created_at": "2026-07-13T05:34:31.972699+00:00",
+  "evaluation_scenarios": "configs/phase4_eval_scenarios.yaml",
+  "figure_files": [
+    "results/phase5/figures/figure_1_system_model.pdf",
+    "results/phase5/figures/figure_1_system_model.png",
+    "results/phase5/figures/figure_2_modeling_pipeline.pdf",
+    "results/phase5/figures/figure_2_modeling_pipeline.png",
+    "results/phase5/figures/figure_3_training_curves.pdf",
+    "results/phase5/figures/figure_3_training_curves.png",
+    "results/phase5/figures/figure_4_algorithm_rate_comparison.pdf",
+    "results/phase5/figures/figure_4_algorithm_rate_comparison.png",
+    "results/phase5/figures/figure_5_scenario_comparison.pdf",
+    "results/phase5/figures/figure_5_scenario_comparison.png",
+    "results/phase5/figures/figure_6_ablation_rate.pdf",
+    "results/phase5/figures/figure_6_ablation_rate.png",
+    "results/phase5/figures/figure_7_constraint_violations.pdf",
+    "results/phase5/figures/figure_7_constraint_violations.png",
+    "results/phase5/figures/figure_8_representative_trajectories.pdf",
+    "results/phase5/figures/figure_8_representative_trajectories.png",
+    "results/phase5/figures/figure_9_rate_over_time.pdf",
+    "results/phase5/figures/figure_9_rate_over_time.png"
+  ],
+  "git_commit": "221c50db0924c5cd02ad69e0e440bbb39da79d6c",
+  "model_files": [
+    {
+      "path": "results/phase4/ablations/A0_full_td3/seed_0/best_actor.pt",
+      "sha256": "a2bd3f029bb42a44286e7efc8169c33acb55650cb3a427037a626cf5d1f80140"
+    },
+    {
+      "path": "results/phase4/ablations/A0_full_td3/seed_0/best_critic.pt",
+      "sha256": "dabe6bfb2926daa18e9b449b127826a000325bd889b05460d4686af08f85f6a8"
+    },
+    {
+      "path": "results/phase4/ablations/A0_full_td3/seed_0/final_actor.pt",
+      "sha256": "c742864478491e2ccb9137883deea9b2f7b8a1564edc141870354cea9daab699"
+    },
+    {
+      "path": "results/phase4/ablations/A0_full_td3/seed_0/final_critic.pt",
+      "sha256": "4094f201595472623800eea6e5181bb3103f1c5c4d83a69ca05f962b7c8aaca6"
+    },
+    {
+      "path": "results/phase4/ablations/A0_full_td3/seed_1/best_actor.pt",
+      "sha256": "c015d40a00cd9d6b2ea4e532f5033100617c1bc0b034b43701d86f5dd290ff7e"
+    },
+    {
+      "path": "results/phase4/ablations/A0_full_td3/seed_1/best_critic.pt",
+      "sha256": "fe465c16cf828c980faf5e0fe351c5842f52df5563b37cdb6cfbe25f3c896783"
+    },
+    {
+      "path": "results/phase4/ablations/A0_full_td3/seed_1/final_actor.pt",
+      "sha256": "f6d715d99d5a86adc536981d2da2098f316b5ed46aa15874ac296b4959a44de8"
+    },
+    {
+      "path": "results/phase4/ablations/A0_full_td3/seed_1/final_critic.pt",
+      "sha256": "c0b14c376200a5976c3695e178f6d79a67a6cb743123aedf744d90256becf7c8"
+    },
+    {
+      "path": "results/phase4/ablations/A0_full_td3/seed_2/best_actor.pt",
+      "sha256": "e6ee50d0fe4d7bbba6683c6ad45590a37230f8a5ef15284905d9d530c32438b2"
+    },
+    {
+      "path": "results/phase4/ablations/A0_full_td3/seed_2/best_critic.pt",
+      "sha256": "1f090602c7b489fb17b76b0951edc215807dd0e42ae7092c655d1fe7202ded40"
+    },
+    {
+      "path": "results/phase4/ablations/A0_full_td3/seed_2/final_actor.pt",
+      "sha256": "4962cc49e608c441823d5691c6375f81438df180b4e3286b542d530dfc6bbd23"
+    },
+    {
+      "path": "results/phase4/ablations/A0_full_td3/seed_2/final_critic.pt",
+      "sha256": "c08d5f0f7cff3862d1f70593e8dd01c8662d577914dd14a89e7213b2e44a298f"
+    },
+    {
+      "path": "results/phase4/ablations/A1_isotropic_antenna/seed_0/best_actor.pt",
+      "sha256": "35247a0c8a3ce00c9d0e2f428d0cd86ddfa43f4bb537af375ad1542360c54128"
+    },
+    {
+      "path": "results/phase4/ablations/A1_isotropic_antenna/seed_0/best_critic.pt",
+      "sha256": "9b000b66db85183617e890a1efcd8f54090b6a883476213cdc1a0d32604085c2"
+    },
+    {
+      "path": "results/phase4/ablations/A1_isotropic_antenna/seed_0/final_actor.pt",
+      "sha256": "2a0b979a87bf028f983612c19f32452f9850bfafde8e71b8624c02940e868c62"
+    },
+    {
+      "path": "results/phase4/ablations/A1_isotropic_antenna/seed_0/final_critic.pt",
+      "sha256": "17ba9c7a3e36c6ffd22bbea0d4808e145f54531af46146b04075d7f9297606fd"
+    },
+    {
+      "path": "results/phase4/ablations/A1_isotropic_antenna/seed_1/best_actor.pt",
+      "sha256": "aefd73904953f9e31822da30c23846714f7b7ffbb8c1afe031e4cfded8a33a38"
+    },
+    {
+      "path": "results/phase4/ablations/A1_isotropic_antenna/seed_1/best_critic.pt",
+      "sha256": "a45316adf757e492b8ca3b4cefe391c7b7a57f8f543ca2af11545b48fa11e978"
+    },
+    {
+      "path": "results/phase4/ablations/A1_isotropic_antenna/seed_1/final_actor.pt",
+      "sha256": "efda81519fa568c5c4361aece79eeaba90973a29eae5770eef6316757ca8e71b"
+    },
+    {
+      "path": "results/phase4/ablations/A1_isotropic_antenna/seed_1/final_critic.pt",
+      "sha256": "2788e4857a393294d1dbf5b7a03a154fdf76ab803d3cad01b64f64358e8d346a"
+    },
+    {
+      "path": "results/phase4/ablations/A1_isotropic_antenna/seed_2/best_actor.pt",
+      "sha256": "4f8a19cbb660dec75ccb0d9c1eaf45ffbe749fa2860cdd4a1320780a977fd071"
+    },
+    {
+      "path": "results/phase4/ablations/A1_isotropic_antenna/seed_2/best_critic.pt",
+      "sha256": "865d46b3cacb4271f8883a13c2a28f0375dc5ef1780d6e5f633987b02843d838"
+    },
+    {
+      "path": "results/phase4/ablations/A1_isotropic_antenna/seed_2/final_actor.pt",
+      "sha256": "5467d85e28c01d376ed0b2670ea5df59527bcf3743f8856faa466d16f5e86ecf"
+    },
+    {
+      "path": "results/phase4/ablations/A1_isotropic_antenna/seed_2/final_critic.pt",
+      "sha256": "4d384220434cdb833bffbcdcc259e277f313af5ecec506b4995f097fd3e297de"
+    },
+    {
+      "path": "results/phase4/ablations/A2_no_balance_penalty/seed_0/best_actor.pt",
+      "sha256": "5a90cd2304c4a7c6d175add91fe26183a8e43c0c1fc7556dc53452aaede166b1"
+    },
+    {
+      "path": "results/phase4/ablations/A2_no_balance_penalty/seed_0/best_critic.pt",
+      "sha256": "97e05f40104e4b82bd76c2c21e7979092b625781f6852839477548a5e1d9469b"
+    },
+    {
+      "path": "results/phase4/ablations/A2_no_balance_penalty/seed_0/final_actor.pt",
+      "sha256": "d9dc0d8cec26270b16e67afd0f3142d04f641df72db18053f2af97c37b8240ed"
+    },
+    {
+      "path": "results/phase4/ablations/A2_no_balance_penalty/seed_0/final_critic.pt",
+      "sha256": "1eb2b7df91639a2c752435ac1ca6922cc760f8b1617a2f252e71864ce36b730a"
+    },
+    {
+      "path": "results/phase4/ablations/A2_no_balance_penalty/seed_1/best_actor.pt",
+      "sha256": "26e983eb8242fc83b00c141bce66651a1bbcebeea01e48970732bce89be73528"
+    },
+    {
+      "path": "results/phase4/ablations/A2_no_balance_penalty/seed_1/best_critic.pt",
+      "sha256": "a83188a9dec58cc15898e83bad4b3070e16d89e31bca7fc4c9d1cef2a28a2438"
+    },
+    {
+      "path": "results/phase4/ablations/A2_no_balance_penalty/seed_1/final_actor.pt",
+      "sha256": "cdcc5968a87376dcd0dc9185ae7d82c2c26f572f5411524d1cd6d7da7f1ab6bb"
+    },
+    {
+      "path": "results/phase4/ablations/A2_no_balance_penalty/seed_1/final_critic.pt",
+      "sha256": "fa68dcb1e567bb0fed19d350b73a3bed24fcf2ab15f241f312b87ab92ec8c416"
+    },
+    {
+      "path": "results/phase4/ablations/A2_no_balance_penalty/seed_2/best_actor.pt",
+      "sha256": "a295f61e6a770d403fa3985c62ddaf4dbaf240a8a82e647ff4294f93a8b5a0e6"
+    },
+    {
+      "path": "results/phase4/ablations/A2_no_balance_penalty/seed_2/best_critic.pt",
+      "sha256": "447a3954da2bde1eb72b34072a26d50f6a7fcd7793534429bc8f6a682e2eb55b"
+    },
+    {
+      "path": "results/phase4/ablations/A2_no_balance_penalty/seed_2/final_actor.pt",
+      "sha256": "1e6b8047c9c19ebe06da73bdbaff31ca7f4cb0dbe6e6e4c9f9db6f7be1f20758"
+    },
+    {
+      "path": "results/phase4/ablations/A2_no_balance_penalty/seed_2/final_critic.pt",
+      "sha256": "7ca2b95b78b7a826f215089b61c44650b4abd8d3e79aec3075e0ce3a348ddcad"
+    },
+    {
+      "path": "results/phase4/ablations/A3_no_energy_penalty/seed_0/best_actor.pt",
+      "sha256": "5992ae6f98a8cf5554b408ab04cc09f6418809cb652e856e3d824126a7c46a03"
+    },
+    {
+      "path": "results/phase4/ablations/A3_no_energy_penalty/seed_0/best_critic.pt",
+      "sha256": "1deea1f6ec5e884d9e1eeadc35396ee51563d5f15b32f2a2a348431407746ddf"
+    },
+    {
+      "path": "results/phase4/ablations/A3_no_energy_penalty/seed_0/final_actor.pt",
+      "sha256": "51f977839dfe945af53b73bf926554a98afc11bc97b1506e60de10724f60a467"
+    },
+    {
+      "path": "results/phase4/ablations/A3_no_energy_penalty/seed_0/final_critic.pt",
+      "sha256": "121f69ae7c4029ff58545152235172f1d0f281d713a08a14c578b68025280492"
+    },
+    {
+      "path": "results/phase4/ablations/A3_no_energy_penalty/seed_1/best_actor.pt",
+      "sha256": "7ebcc3fbbb30e003e2457f49f7d19a748a69227f65069a87d65ebd7de392f9ed"
+    },
+    {
+      "path": "results/phase4/ablations/A3_no_energy_penalty/seed_1/best_critic.pt",
+      "sha256": "acde55837adc13f1be2544fd405eaedbae3507329f8dc3446b125f5418cbf9c1"
+    },
+    {
+      "path": "results/phase4/ablations/A3_no_energy_penalty/seed_1/final_actor.pt",
+      "sha256": "44520d185f745870b9547484d3af8302ec4109d1be77c09020ce64f4bb6b7e98"
+    },
+    {
+      "path": "results/phase4/ablations/A3_no_energy_penalty/seed_1/final_critic.pt",
+      "sha256": "9bcc24f2b33107c9700c22aa6bdf816e2c92662fa41adb69836f9588140d9200"
+    },
+    {
+      "path": "results/phase4/ablations/A3_no_energy_penalty/seed_2/best_actor.pt",
+      "sha256": "e1863d843e5de83a77f72244c041e85783cd1702d05bac2e2938a47172fc7a01"
+    },
+    {
+      "path": "results/phase4/ablations/A3_no_energy_penalty/seed_2/best_critic.pt",
+      "sha256": "7d88c57a7bf4f7cd4c95467d2c19720aa3e7fc168a7645d4bccad5b954ef642a"
+    },
+    {
+      "path": "results/phase4/ablations/A3_no_energy_penalty/seed_2/final_actor.pt",
+      "sha256": "55f45684ecd992f4bed759cd9d81528a642246e16a8fe8175ee8061e93d3ada3"
+    },
+    {
+      "path": "results/phase4/ablations/A3_no_energy_penalty/seed_2/final_critic.pt",
+      "sha256": "fb6578d7cb990118f1df7446e066d3a387dbb40b2d08ac522b9567c05066dce5"
+    },
+    {
+      "path": "results/phase4/ablations/A4_fixed_relay_height/seed_0/best_actor.pt",
+      "sha256": "7d24a9f1df41d61fbd65ba1a668dab132e22fd6021cda9434a56c26b3d35f51b"
+    },
+    {
+      "path": "results/phase4/ablations/A4_fixed_relay_height/seed_0/best_critic.pt",
+      "sha256": "2bb15344bb6aa1c7f0397ca137a93f4a93503ae8cef476fca2eee861cbb9b394"
+    },
+    {
+      "path": "results/phase4/ablations/A4_fixed_relay_height/seed_0/final_actor.pt",
+      "sha256": "2b5058fb34f2d84723fe675a7ffa5e70220bdbb8fa59447216405a0f8eec8ee7"
+    },
+    {
+      "path": "results/phase4/ablations/A4_fixed_relay_height/seed_0/final_critic.pt",
+      "sha256": "33441c2bf7b2f012d33f68c2faef9d5e9c960c439509ab83830db7053fe76716"
+    },
+    {
+      "path": "results/phase4/ablations/A4_fixed_relay_height/seed_1/best_actor.pt",
+      "sha256": "e1018fee5c08c42a600611e608eb250859d4f580415f0d1b5a3c977eb6f890f2"
+    },
+    {
+      "path": "results/phase4/ablations/A4_fixed_relay_height/seed_1/best_critic.pt",
+      "sha256": "bfe1faa4cfab8e96fb283f36e9fd650e3753b1a8f759bcbcb289fa88bb352ea7"
+    },
+    {
+      "path": "results/phase4/ablations/A4_fixed_relay_height/seed_1/final_actor.pt",
+      "sha256": "3a60e1b554407b95d5dd627b7d61153c0fa2af5dabdaf6f711543c379b02247f"
+    },
+    {
+      "path": "results/phase4/ablations/A4_fixed_relay_height/seed_1/final_critic.pt",
+      "sha256": "e0437192e2b6cc29df7ed718ad6428a31bdd87b98f4d186593da9a6febc80c50"
+    },
+    {
+      "path": "results/phase4/ablations/A4_fixed_relay_height/seed_2/best_actor.pt",
+      "sha256": "7d5d2100ac07fa06cdab9c4d0106e82a27150a40fa86b6ec55d45568861ec3e6"
+    },
+    {
+      "path": "results/phase4/ablations/A4_fixed_relay_height/seed_2/best_critic.pt",
+      "sha256": "abd06a60454ec836b88380d5b31eee08da81361dde84219854e94bb854e05974"
+    },
+    {
+      "path": "results/phase4/ablations/A4_fixed_relay_height/seed_2/final_actor.pt",
+      "sha256": "0b530aa8cf07a73977def81157965b54b73431f8ef4490af462cd8b8e6e30c32"
+    },
+    {
+      "path": "results/phase4/ablations/A4_fixed_relay_height/seed_2/final_critic.pt",
+      "sha256": "4d282205189351ec58f0d6fa151514e759cbb9dfa37ddd288b37471d0ccd886b"
+    },
+    {
+      "path": "results/phase4/algorithms/ddpg/seed_0/best_actor.pt",
+      "sha256": "a01bb27e525bf76f70637e9a34256e449f03df63049c3173708993d268c870b2"
+    },
+    {
+      "path": "results/phase4/algorithms/ddpg/seed_0/best_critic.pt",
+      "sha256": "81c36b2e3786fdae1793a5721168b79baf2d04374082dec281969e3a5bab2d1b"
+    },
+    {
+      "path": "results/phase4/algorithms/ddpg/seed_0/final_actor.pt",
+      "sha256": "39e3a9a520b6f5deef2ceef13849c88f3345be93fb92acf777b9167c88edf61a"
+    },
+    {
+      "path": "results/phase4/algorithms/ddpg/seed_0/final_critic.pt",
+      "sha256": "d1f2c4836f5404b2a0989aea244ff720976ee5cfc6e510db5bff3a39543f29d2"
+    },
+    {
+      "path": "results/phase4/algorithms/ddpg/seed_1/best_actor.pt",
+      "sha256": "f4c3663400a292e22de96b5e52b08c064358db958cf718d7f0c2ceac684b2382"
+    },
+    {
+      "path": "results/phase4/algorithms/ddpg/seed_1/best_critic.pt",
+      "sha256": "46ca75a9d8cdea8b0e65a423e44898a85ef443e15435ab04c514056278131474"
+    },
+    {
+      "path": "results/phase4/algorithms/ddpg/seed_1/final_actor.pt",
+      "sha256": "64fe7a4fb4a3b9418dc101e76723c6e70a29a6f874567271ee8bdc1b270e2a9d"
+    },
+    {
+      "path": "results/phase4/algorithms/ddpg/seed_1/final_critic.pt",
+      "sha256": "9c073009c1b67742236e0e36bb4c3cf911e91ab2888d065792190a8896c3a3c1"
+    },
+    {
+      "path": "results/phase4/algorithms/ddpg/seed_2/best_actor.pt",
+      "sha256": "7cc7b5bd0afd0348007d1cf8f42873af527ffcecf41b504e732df5b2587be985"
+    },
+    {
+      "path": "results/phase4/algorithms/ddpg/seed_2/best_critic.pt",
+      "sha256": "7cf7d933e9b58e40cf3227d54dd22a5df475da0e2cb31a820394bf145a17a329"
+    },
+    {
+      "path": "results/phase4/algorithms/ddpg/seed_2/final_actor.pt",
+      "sha256": "f78c6aa09d0dd78ebd89aab55e5f8159ce2693eb9679cd57a93ab461532f6fa0"
+    },
+    {
+      "path": "results/phase4/algorithms/ddpg/seed_2/final_critic.pt",
+      "sha256": "854e1ec1a7922508f9706b5e9fa897606d65b7b293af8bf2f02b23399e6cb2fd"
+    },
+    {
+      "path": "results/phase4/algorithms/sac/seed_0/best_actor.pt",
+      "sha256": "e3ce1f05ea720ced05d8c995b4c2c1adb36e6f1f31b41713d7ea525efdcc7a51"
+    },
+    {
+      "path": "results/phase4/algorithms/sac/seed_0/best_critic.pt",
+      "sha256": "8d9f4397245f3311be5476c29d69fde0dfc0528820f3b29ea36308f2304e257a"
+    },
+    {
+      "path": "results/phase4/algorithms/sac/seed_0/final_actor.pt",
+      "sha256": "ed51aa45451ceb8d273263258f78d045d07e96ece28c5e0a4e1d1ff0ea2425b5"
+    },
+    {
+      "path": "results/phase4/algorithms/sac/seed_0/final_critic.pt",
+      "sha256": "c3f47466740db65b77322d338bf9679e563078f36ce722a5d24d0880fee11249"
+    },
+    {
+      "path": "results/phase4/algorithms/sac/seed_1/best_actor.pt",
+      "sha256": "d334faed5a4056ee52fe57fd4c5208a288a2b8f098c2a6a157938ccf220a9f72"
+    },
+    {
+      "path": "results/phase4/algorithms/sac/seed_1/best_critic.pt",
+      "sha256": "3bd28a3cc2e53b680583d0969f21be7688ed2838f39a5ec8c803b7b6dc01156c"
+    },
+    {
+      "path": "results/phase4/algorithms/sac/seed_1/final_actor.pt",
+      "sha256": "7bdd177aab5ce29dfd403acd475a85d0bbc13c87808b59a946bd1af7911a4b8a"
+    },
+    {
+      "path": "results/phase4/algorithms/sac/seed_1/final_critic.pt",
+      "sha256": "846022048fad69272f687b4d86c4cbe25d0f9557aac7c57e0676fea83240eb94"
+    },
+    {
+      "path": "results/phase4/algorithms/sac/seed_2/best_actor.pt",
+      "sha256": "d84b644d6839fd30456c4a203ea7f0dfb3e85e8524fda928a41ae288952a0638"
+    },
+    {
+      "path": "results/phase4/algorithms/sac/seed_2/best_critic.pt",
+      "sha256": "1464631657cd6dadd3804c4425e5231500820dacd3c47ed6460fd2bd6ad7fe74"
+    },
+    {
+      "path": "results/phase4/algorithms/sac/seed_2/final_actor.pt",
+      "sha256": "70a6ca3f0a126b122c7814ae43dc15381e20c7b8f19dec4ed1c3b871db386a61"
+    },
+    {
+      "path": "results/phase4/algorithms/sac/seed_2/final_critic.pt",
+      "sha256": "18d6acfd98dfbf04d705542b0ad4b9ad4baf8cb8dcad799d77576b11cb5d068b"
+    },
+    {
+      "path": "results/phase4/algorithms/td3/seed_0/best_actor.pt",
+      "sha256": "a2bd3f029bb42a44286e7efc8169c33acb55650cb3a427037a626cf5d1f80140"
+    },
+    {
+      "path": "results/phase4/algorithms/td3/seed_0/best_critic.pt",
+      "sha256": "dabe6bfb2926daa18e9b449b127826a000325bd889b05460d4686af08f85f6a8"
+    },
+    {
+      "path": "results/phase4/algorithms/td3/seed_0/final_actor.pt",
+      "sha256": "c742864478491e2ccb9137883deea9b2f7b8a1564edc141870354cea9daab699"
+    },
+    {
+      "path": "results/phase4/algorithms/td3/seed_0/final_critic.pt",
+      "sha256": "4094f201595472623800eea6e5181bb3103f1c5c4d83a69ca05f962b7c8aaca6"
+    },
+    {
+      "path": "results/phase4/algorithms/td3/seed_1/best_actor.pt",
+      "sha256": "c015d40a00cd9d6b2ea4e532f5033100617c1bc0b034b43701d86f5dd290ff7e"
+    },
+    {
+      "path": "results/phase4/algorithms/td3/seed_1/best_critic.pt",
+      "sha256": "fe465c16cf828c980faf5e0fe351c5842f52df5563b37cdb6cfbe25f3c896783"
+    },
+    {
+      "path": "results/phase4/algorithms/td3/seed_1/final_actor.pt",
+      "sha256": "f6d715d99d5a86adc536981d2da2098f316b5ed46aa15874ac296b4959a44de8"
+    },
+    {
+      "path": "results/phase4/algorithms/td3/seed_1/final_critic.pt",
+      "sha256": "c0b14c376200a5976c3695e178f6d79a67a6cb743123aedf744d90256becf7c8"
+    },
+    {
+      "path": "results/phase4/algorithms/td3/seed_2/best_actor.pt",
+      "sha256": "e6ee50d0fe4d7bbba6683c6ad45590a37230f8a5ef15284905d9d530c32438b2"
+    },
+    {
+      "path": "results/phase4/algorithms/td3/seed_2/best_critic.pt",
+      "sha256": "1f090602c7b489fb17b76b0951edc215807dd0e42ae7092c655d1fe7202ded40"
+    },
+    {
+      "path": "results/phase4/algorithms/td3/seed_2/final_actor.pt",
+      "sha256": "4962cc49e608c441823d5691c6375f81438df180b4e3286b542d530dfc6bbd23"
+    },
+    {
+      "path": "results/phase4/algorithms/td3/seed_2/final_critic.pt",
+      "sha256": "c08d5f0f7cff3862d1f70593e8dd01c8662d577914dd14a89e7213b2e44a298f"
+    }
+  ],
+  "operating_system": "Windows-10-10.0.19045-SP0",
+  "package_versions": {
+    "matplotlib": "3.10.7",
+    "numpy": "2.3.4",
+    "torch": "2.12.0+cpu"
+  },
+  "phase5_generation_commit": "88dd916db1a579adfe6dfc2f6964e22258e8367d",
+  "python_version": "3.14.0",
+  "source_code_hash": "013686511bc9830caa578e6aa7d4ea21962f1c845348e8e7a6db66acce6e9f97",
+  "table_files": [
+    "results/phase5/tables/table_1_system_parameters.csv",
+    "results/phase5/tables/table_1_system_parameters.md",
+    "results/phase5/tables/table_2_training_parameters.csv",
+    "results/phase5/tables/table_2_training_parameters.md",
+    "results/phase5/tables/table_3_algorithm_comparison.csv",
+    "results/phase5/tables/table_3_algorithm_comparison.md",
+    "results/phase5/tables/table_4_ablation_results.csv",
+    "results/phase5/tables/table_4_ablation_results.md",
+    "results/phase5/tables/table_5_scenario_results.csv",
+    "results/phase5/tables/table_5_scenario_results.md"
+  ],
+  "training_seeds": [
+    0,
+    1,
+    2
+  ]
+}

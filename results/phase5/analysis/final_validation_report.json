@@ -1,0 +1,181 @@
+{
+  "ablation_episode_rows": 75,
+  "algorithm_episode_rows": 75,
+  "checks": [
+    {
+      "details": "",
+      "name": "results/phase4/algorithm_episode_results.csv required fields",
+      "passed": true
+    },
+    {
+      "details": "",
+      "name": "results/phase4/algorithm_summary.csv required fields",
+      "passed": true
+    },
+    {
+      "details": "",
+      "name": "results/phase4/ablations/ablation_results.csv required fields",
+      "passed": true
+    },
+    {
+      "details": "",
+      "name": "results/phase4/ablations/ablation_summary.csv required fields",
+      "passed": true
+    },
+    {
+      "details": "seeds=[0, 1, 2]",
+      "name": "TD3 has 3 training seeds",
+      "passed": true
+    },
+    {
+      "details": "",
+      "name": "TD3 evaluated on eval_0..eval_4",
+      "passed": true
+    },
+    {
+      "details": "seeds=[0, 1, 2]",
+      "name": "DDPG has 3 training seeds",
+      "passed": true
+    },
+    {
+      "details": "",
+      "name": "DDPG evaluated on eval_0..eval_4",
+      "passed": true
+    },
+    {
+      "details": "seeds=[0, 1, 2]",
+      "name": "SAC has 3 training seeds",
+      "passed": true
+    },
+    {
+      "details": "",
+      "name": "SAC evaluated on eval_0..eval_4",
+      "passed": true
+    },
+    {
+      "details": "",
+      "name": "RandomPolicy uses fixed eval scenarios",
+      "passed": true
+    },
+    {
+      "details": "",
+      "name": "StaticRelayPolicy uses fixed eval scenarios",
+      "passed": true
+    },
+    {
+      "details": "",
+      "name": "MidpointPolicy uses fixed eval scenarios",
+      "passed": true
+    },
+    {
+      "details": "",
+      "name": "HorizontalMidpointPolicy uses fixed eval scenarios",
+      "passed": true
+    },
+    {
+      "details": "",
+      "name": "GreedyRatePolicy uses fixed eval scenarios",
+      "passed": true
+    },
+    {
+      "details": "",
+      "name": "BalancedLinkPolicy uses fixed eval scenarios",
+      "passed": true
+    },
+    {
+      "details": "seeds=[0, 1, 2]",
+      "name": "A0_full_td3 has 3 training seeds",
+      "passed": true
+    },
+    {
+      "details": "",
+      "name": "A0_full_td3 evaluated on eval_0..eval_4",
+      "passed": true
+    },
+    {
+      "details": "seeds=[0, 1, 2]",
+      "name": "A1_isotropic_antenna has 3 training seeds",
+      "passed": true
+    },
+    {
+      "details": "",
+      "name": "A1_isotropic_antenna evaluated on eval_0..eval_4",
+      "passed": true
+    },
+    {
+      "details": "seeds=[0, 1, 2]",
+      "name": "A2_no_balance_penalty has 3 training seeds",
+      "passed": true
+    },
+    {
+      "details": "",
+      "name": "A2_no_balance_penalty evaluated on eval_0..eval_4",
+      "passed": true
+    },
+    {
+      "details": "seeds=[0, 1, 2]",
+      "name": "A3_no_energy_penalty has 3 training seeds",
+      "passed": true
+    },
+    {
+      "details": "",
+      "name": "A3_no_energy_penalty evaluated on eval_0..eval_4",
+      "passed": true
+    },
+    {
+      "details": "seeds=[0, 1, 2]",
+      "name": "A4_fixed_relay_height has 3 training seeds",
+      "passed": true
+    },
+    {
+      "details": "",
+      "name": "A4_fixed_relay_height evaluated on eval_0..eval_4",
+      "passed": true
+    },
+    {
+      "details": "",
+      "name": "official metadata flags are valid",
+      "passed": true
+    },
+    {
+      "details": "commits=['221c50db0924c5cd02ad69e0e440bbb39da79d6c']",
+      "name": "all formal results use one git_commit",
+      "passed": true
+    },
+    {
+      "details": "source_hashes=['013686511bc9830caa578e6aa7d4ea21962f1c845348e8e7a6db66acce6e9f97']",
+      "name": "all formal results use one source_code_hash",
+      "passed": true
+    },
+    {
+      "details": "",
+      "name": "recorded result paths are relative",
+      "passed": true
+    },
+    {
+      "details": "",
+      "name": "no NaN or inf in Phase 4 CSV/JSON",
+      "passed": true
+    },
+    {
+      "details": "",
+      "name": "no duplicate method + seed + scenario_id",
+      "passed": true
+    },
+    {
+      "details": "",
+      "name": "algorithm summary matches episode data",
+      "passed": true
+    },
+    {
+      "details": "",
+      "name": "ablation summary matches episode data",
+      "passed": true
+    }
+  ],
+  "created_at": "2026-07-13T05:33:41.434183+00:00",
+  "git_commit": "221c50db0924c5cd02ad69e0e440bbb39da79d6c",
+  "passed": true,
+  "phase4_training_params_count": 24,
+  "source_code_hash": "013686511bc9830caa578e6aa7d4ea21962f1c845348e8e7a6db66acce6e9f97"
+}

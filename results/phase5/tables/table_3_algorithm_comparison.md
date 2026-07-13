@@ -1,0 +1,11 @@
+| method | mean_rate_bps | mean_rate_mbps | std_rate_bps | std_rate_mbps | mean_reward | outage_count_mean | constraint_violation_count_mean | trajectory_length_mean | std_source |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| TD3 | 4639009.55188 | 4.63900955188 | 492723.209231 | 0.492723209231 | 370.834417058 | 0 | 86.1333333333 | 100 | training_seed x eval_scenario |
+| DDPG | 4465209.03537 | 4.46520903537 | 746118.091477 | 0.746118091477 | 356.690702652 | 0 | 82.3333333333 | 100 | training_seed x eval_scenario |
+| SAC | 4876508.42812 | 4.87650842812 | 183181.368418 | 0.183181368418 | 404.3012268 | 0 | 79.4 | 100 | training_seed x eval_scenario |
+| RandomPolicy | 3366255.73816 | 3.36625573816 | 860923.680074 | 0.860923680074 | 318.897224748 | 0 | 0 | 100 | eval_scenario |
+| StaticRelayPolicy | 3213153.09379 | 3.21315309379 | 808139.614926 | 0.808139614926 | 302.640688071 | 0 | 0 | 100 | eval_scenario |
+| MidpointPolicy | 4642902.06738 | 4.64290206738 | 493709.473863 | 0.493709473863 | 365.378298345 | 0 | 94 | 100 | eval_scenario |
+| HorizontalMidpointPolicy | 3277603.83984 | 3.27760383984 | 706622.451391 | 0.706622451391 | 307.335031599 | 0 | 2 | 100 | eval_scenario |
+| GreedyRatePolicy | 4640938.01338 | 4.64093801338 | 1113251.5579 | 1.1132515579 | 452.246697644 | 0 | 6.8 | 100 | eval_scenario |
+| BalancedLinkPolicy | 4814523.16773 | 4.81452316773 | 469924.837048 | 0.469924837048 | 476.573803419 | 0 | 3.4 | 100 | eval_scenario |
