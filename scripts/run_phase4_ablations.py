@@ -15,8 +15,11 @@ if str(SRC) not in sys.path:
 from phase4_common import (
     EPISODE_RESULT_FIELDS,
     PHASE4_CONFIG_PATH,
+    assert_clean_git_worktree,
+    compute_source_code_hash,
     env_config_from_overrides,
     evaluate_saved_agent,
+    is_official_result_dir,
     load_phase4_config,
     phase4_eval_scenarios,
     phase4_training_metadata,
@@ -58,7 +61,13 @@ def _ablation_episode_row(ablation: str, row: dict[str, Any]) -> dict[str, Any]:
     return row
 
 
-def run_phase4_ablations(config_path: str | Path = PHASE4_CONFIG_PATH, force: bool = False) -> tuple[list[dict], list[dict]]:
+def run_phase4_ablations(
+    config_path: str | Path = PHASE4_CONFIG_PATH,
+    force: bool = False,
+    allow_dirty: bool = False,
+) -> tuple[list[dict], list[dict]]:
+    git_dirty = assert_clean_git_worktree(allow_dirty=allow_dirty)
+    source_code_hash = compute_source_code_hash()
     config = load_phase4_config(config_path)
     output_root = resolve_path(config["output"]["root_dir"])
     ablation_root = output_root / "ablations"
@@ -75,7 +84,15 @@ def run_phase4_ablations(config_path: str | Path = PHASE4_CONFIG_PATH, force: bo
         for seed in seeds:
             model_dir = ablation_root / ablation_name / f"seed_{seed}"
             overrides = phase4_training_overrides(config, seed, "td3", model_dir)
-            expected_metadata = phase4_training_metadata("td3", overrides, env_config, eval_scenarios, action_transform)
+            expected_metadata = phase4_training_metadata(
+                "td3",
+                overrides,
+                env_config,
+                eval_scenarios,
+                action_transform,
+                git_dirty=git_dirty,
+                source_code_hash=source_code_hash,
+            )
             if model_dir.exists() and not force:
                 validate_phase4_reuse(model_dir, expected_metadata)
                 print(
@@ -94,7 +111,12 @@ def run_phase4_ablations(config_path: str | Path = PHASE4_CONFIG_PATH, force: bo
                     env_config=env_config,
                     eval_scenarios=eval_scenarios,
                     action_transform=action_transform,
+                    git_dirty=git_dirty,
+                    source_code_hash=source_code_hash,
                 )
+            if not is_official_result_dir(model_dir):
+                print(f"skip unofficial ablation result: {model_dir}")
+                continue
             for eval_episode, scenario in enumerate(eval_scenarios):
                 row = evaluate_saved_agent(
                     "td3",
@@ -107,6 +129,15 @@ def run_phase4_ablations(config_path: str | Path = PHASE4_CONFIG_PATH, force: bo
                     action_transform=action_transform,
                 )
                 all_rows.append(_ablation_episode_row(ablation_name, row))
+
+    if not all_rows:
+        results_path = ablation_root / "ablation_results.csv"
+        summary_path = ablation_root / "ablation_summary.csv"
+        write_csv(results_path, all_rows, EPISODE_RESULT_FIELDS)
+        write_csv(summary_path, [], ABLATION_SUMMARY_FIELDS)
+        print(f"saved Phase 4 ablation results: {results_path}")
+        print(f"saved Phase 4 ablation summary: {summary_path}")
+        return all_rows, []
 
     summary_rows = summarize_episode_results(all_rows)
     full_row = next(row for row in summary_rows if row["algorithm"] == "A0_full_td3")
@@ -137,9 +168,10 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Run Phase 4 TD3 ablations.")
     parser.add_argument("--config", default=str(PHASE4_CONFIG_PATH), help="Path to Phase 4 experiment YAML.")
     parser.add_argument("--force", action="store_true", help="Retrain and overwrite Phase 4 ablation outputs.")
+    parser.add_argument("--allow-dirty", action="store_true", help="Allow debug ablation training from a dirty worktree; marks outputs unofficial.")
     return parser.parse_args(argv)
 
 
 if __name__ == "__main__":
     args = parse_args()
-    run_phase4_ablations(args.config, force=args.force)
+    run_phase4_ablations(args.config, force=args.force, allow_dirty=args.allow_dirty)

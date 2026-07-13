@@ -11,14 +11,18 @@ if str(SCRIPTS) not in sys.path:
 from phase4_common import (
     ALGORITHMS,
     EPISODE_RESULT_FIELDS,
+    assert_clean_git_worktree,
     baseline_episode_rows,
     build_agent,
     env_config_from_overrides,
+    is_official_result_dir,
     load_phase4_config,
     phase4_eval_scenarios,
+    phase4_training_metadata,
     phase4_training_overrides,
     select_agent_action,
 )
+from uav_relay_env.drl.utils import save_json
 from uav_relay_env import UAVRelayCommEnv
 
 
@@ -137,3 +141,83 @@ def test_phase4_output_dirs_do_not_overlap_and_are_relative():
             assert not Path(overrides["output"]["root_dir"]).is_absolute()
 
     assert len(output_dirs) == len(set(output_dirs))
+
+
+def test_formal_training_requires_clean_worktree(monkeypatch):
+    import phase4_common
+
+    monkeypatch.setattr(phase4_common, "current_git_dirty", lambda: True)
+
+    try:
+        assert_clean_git_worktree(allow_dirty=False)
+    except RuntimeError as exc:
+        assert "clean Git worktree" in str(exc)
+    else:
+        raise AssertionError("dirty worktree must be rejected")
+
+
+def test_training_metadata_contains_version_fields():
+    config = load_phase4_config("configs/phase4_experiments.yaml")
+    scenarios = phase4_eval_scenarios(config)
+    overrides = phase4_training_overrides(config, 0, "td3", Path("results/phase4/algorithms/td3/seed_0"))
+    metadata = phase4_training_metadata(
+        "td3",
+        overrides,
+        env_config_from_overrides(),
+        scenarios,
+        git_dirty=False,
+        source_code_hash="source-hash",
+    )
+
+    for field in [
+        "algorithm",
+        "training_seed",
+        "episodes",
+        "max_steps",
+        "config_hash",
+        "source_code_hash",
+        "git_commit",
+        "git_dirty",
+        "official_result",
+        "created_at",
+    ]:
+        assert field in metadata
+    assert metadata["git_dirty"] is False
+    assert metadata["official_result"] is True
+
+
+def test_unofficial_results_are_not_official_summary_inputs(tmp_path):
+    model_dir = tmp_path / "model"
+    model_dir.mkdir()
+    save_json(
+        model_dir / "training_params.json",
+        {
+            "official_result": False,
+            "git_dirty": True,
+        },
+    )
+
+    assert is_official_result_dir(model_dir) is False
+
+
+def test_official_metadata_commit_and_source_hash_are_consistent():
+    config = load_phase4_config("configs/phase4_experiments.yaml")
+    scenarios = phase4_eval_scenarios(config)
+    source_hash = "source-hash"
+    metadata_rows = []
+    for seed in config["experiment"]["training_seeds"]:
+        overrides = phase4_training_overrides(config, int(seed), "td3", Path("results/phase4") / "td3" / f"seed_{seed}")
+        metadata_rows.append(
+            phase4_training_metadata(
+                "td3",
+                overrides,
+                env_config_from_overrides(),
+                scenarios,
+                git_dirty=False,
+                source_code_hash=source_hash,
+            )
+        )
+
+    official = [row for row in metadata_rows if row["official_result"] is True]
+    assert len({row["git_commit"] for row in official}) == 1
+    assert len({row["source_code_hash"] for row in official}) == 1

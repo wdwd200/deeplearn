@@ -16,6 +16,7 @@ from phase4_common import (
     baseline_episode_rows,
     env_config_from_overrides,
     evaluate_saved_agent,
+    is_official_result_dir,
     load_phase4_config,
     phase4_eval_scenarios,
     resolve_path,
@@ -40,6 +41,9 @@ def evaluate_phase4_algorithms(config_path: str | Path = PHASE4_CONFIG_PATH) -> 
             model_dir = output_root / "algorithms" / algorithm / f"seed_{seed}"
             if not (model_dir / "best_actor.pt").exists():
                 raise FileNotFoundError(f"missing best model for {algorithm} seed={seed}: {model_dir}")
+            if not is_official_result_dir(model_dir):
+                print(f"skip unofficial result: {model_dir}")
+                continue
             for eval_episode, scenario in enumerate(eval_scenarios):
                 rows.append(
                     evaluate_saved_agent(

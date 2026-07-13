@@ -29,6 +29,20 @@ COMM_CONFIG_PATH = ROOT / "configs" / "comm_env_default.yaml"
 EVAL_SCENARIOS_PATH = ROOT / "configs" / "phase4_eval_scenarios.yaml"
 PHASE4_CONFIG_PATH = ROOT / "configs" / "phase4_experiments.yaml"
 ALGORITHMS = ("td3", "ddpg", "sac")
+SOURCE_HASH_PATHS = [
+    "src/uav_relay_env/drl",
+    "src/uav_relay_env/comm_env.py",
+    "src/uav_relay_env/reward.py",
+    "src/uav_relay_env/channel.py",
+    "src/uav_relay_env/rate.py",
+    "src/uav_relay_env/mobility.py",
+    "scripts/phase4_common.py",
+    "scripts/train_phase4_algorithms.py",
+    "scripts/run_phase4_ablations.py",
+    "scripts/evaluate_phase4_algorithms.py",
+    "configs/phase4_experiments.yaml",
+    "configs/phase4_eval_scenarios.yaml",
+]
 
 TRAINING_FIELDS = [
     "episode",
@@ -154,18 +168,77 @@ def stable_sha256(data: Any) -> str:
     return hashlib.sha256(canonical_json(data).encode("utf-8")).hexdigest()
 
 
+def _run_git(args: Sequence[str]) -> str:
+    result = subprocess.run(
+        ["git", *args],
+        check=True,
+        capture_output=True,
+        text=True,
+        cwd=ROOT,
+    )
+    return result.stdout.strip()
+
+
 def current_git_commit() -> str:
     try:
-        result = subprocess.run(
-            ["git", "rev-parse", "HEAD"],
-            check=True,
-            capture_output=True,
-            text=True,
-            cwd=ROOT,
-        )
+        return _run_git(["rev-parse", "HEAD"]) or "unknown"
     except (OSError, subprocess.CalledProcessError):
         return "unknown"
-    return result.stdout.strip() or "unknown"
+
+
+def git_status_porcelain() -> str:
+    try:
+        return _run_git(["status", "--porcelain"])
+    except (OSError, subprocess.CalledProcessError):
+        return ""
+
+
+def git_dirty_from_status(status_output: str) -> bool:
+    return bool(status_output.strip())
+
+
+def current_git_dirty() -> bool:
+    return git_dirty_from_status(git_status_porcelain())
+
+
+def assert_clean_git_worktree(allow_dirty: bool = False) -> bool:
+    dirty = current_git_dirty()
+    if dirty and not allow_dirty:
+        raise RuntimeError("official training requires a clean Git worktree; commit code first or use --allow-dirty for debugging")
+    return dirty
+
+
+def iter_source_hash_files(paths: Sequence[str | Path] = SOURCE_HASH_PATHS, root: Path = ROOT) -> list[Path]:
+    files: list[Path] = []
+    for raw_path in paths:
+        path = root / raw_path
+        if path.is_dir():
+            files.extend(
+                candidate
+                for candidate in path.rglob("*")
+                if candidate.is_file()
+                and "__pycache__" not in candidate.parts
+                and candidate.suffix in {".py", ".yaml", ".yml", ".json"}
+            )
+        elif path.is_file():
+            files.append(path)
+        else:
+            raise FileNotFoundError(path)
+    return sorted(
+        set(files),
+        key=lambda candidate: str(candidate.resolve().relative_to(root.resolve())).replace("\\", "/"),
+    )
+
+
+def compute_source_code_hash(paths: Sequence[str | Path] = SOURCE_HASH_PATHS, root: Path = ROOT) -> str:
+    digest = hashlib.sha256()
+    for path in iter_source_hash_files(paths, root=root):
+        rel_path = str(path.resolve().relative_to(root.resolve())).replace("\\", "/")
+        digest.update(rel_path.encode("utf-8"))
+        digest.update(b"\0")
+        digest.update(path.read_bytes())
+        digest.update(b"\0")
+    return digest.hexdigest()
 
 
 def eval_scenarios_path_from_config(config: Mapping[str, Any]) -> Path:
@@ -539,12 +612,18 @@ def phase4_training_metadata(
     env_config: EnvConfig,
     eval_scenarios: Sequence[Mapping[str, Any]],
     action_transform: Callable[[np.ndarray], np.ndarray] | None = None,
+    git_dirty: bool | None = None,
+    source_code_hash: str | None = None,
 ) -> dict[str, Any]:
     payload = phase4_config_payload(algorithm, config, env_config, eval_scenarios, action_transform)
+    dirty = current_git_dirty() if git_dirty is None else bool(git_dirty)
     return {
         **payload,
         "config_hash": stable_sha256(payload),
         "git_commit": current_git_commit(),
+        "git_dirty": dirty,
+        "source_code_hash": source_code_hash if source_code_hash is not None else compute_source_code_hash(),
+        "official_result": not dirty,
         "created_at": datetime.now(timezone.utc).isoformat(),
     }
 
@@ -565,6 +644,10 @@ PHASE4_REUSE_FIELDS = [
     "eval_scenarios",
     "action_transform",
     "config_hash",
+    "source_code_hash",
+    "git_commit",
+    "git_dirty",
+    "official_result",
 ]
 
 
@@ -591,9 +674,13 @@ def validate_phase4_reuse(
             continue
         if canonical_json(saved[field]) != canonical_json(expected_metadata[field]):
             mismatches.append(field)
+    if saved.get("git_dirty") is not False:
+        mismatches.append("git_dirty must be false")
+    if saved.get("official_result") is not True:
+        mismatches.append("official_result must be true")
     if mismatches:
         raise RuntimeError(
-            f"existing result config mismatch in {relative_path(model_dir)}: {', '.join(mismatches)}; use --force"
+            f"existing result does not match current code/config in {relative_path(model_dir)}: {', '.join(mismatches)}; use --force"
         )
 
 
@@ -744,6 +831,8 @@ def train_algorithm_seed(
     env_config: EnvConfig | None = None,
     eval_scenarios: Sequence[Mapping[str, Any]] | None = None,
     action_transform: Callable[[np.ndarray], np.ndarray] | None = None,
+    git_dirty: bool | None = None,
+    source_code_hash: str | None = None,
 ) -> tuple[list[dict[str, Any]], list[dict[str, Any]], Path]:
     seed = int(config["seed"])
     training = config["training"]
@@ -752,7 +841,15 @@ def train_algorithm_seed(
     output_path = make_output_dir(output_dir)
     env_config = env_config if env_config is not None else load_config(COMM_CONFIG_PATH)
     eval_scenarios = list(eval_scenarios) if eval_scenarios is not None else phase4_eval_scenarios(config)
-    metadata = phase4_training_metadata(algorithm, config, env_config, eval_scenarios, action_transform)
+    metadata = phase4_training_metadata(
+        algorithm,
+        config,
+        env_config,
+        eval_scenarios,
+        action_transform,
+        git_dirty=git_dirty,
+        source_code_hash=source_code_hash,
+    )
     env = UAVRelayCommEnv(config=env_config)
     agent = build_agent(algorithm, config, env)
     replay_buffer = ReplayBuffer(env.observation_dim, env.action_dim, capacity=int(training["replay_size"]), seed=seed)
@@ -854,6 +951,21 @@ def load_agent_from_dir(algorithm: str, model_dir: Path, env_config: EnvConfig |
         prefer_best = False
     agent.load(model_dir, prefix="best" if prefer_best else "final", prefer_best=prefer_best)
     return agent
+
+
+def load_training_metadata(model_dir: Path) -> dict[str, Any]:
+    metadata = load_yaml(model_dir / "training_params.json")
+    if not isinstance(metadata, dict):
+        raise ValueError(f"training_params.json in {relative_path(model_dir)} must contain a mapping")
+    return metadata
+
+
+def is_official_result_dir(model_dir: Path) -> bool:
+    try:
+        metadata = load_training_metadata(model_dir)
+    except (FileNotFoundError, ValueError):
+        return False
+    return metadata.get("official_result") is True and metadata.get("git_dirty") is False
 
 
 def evaluate_saved_agent(
