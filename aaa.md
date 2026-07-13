@@ -1,67 +1,53 @@
-# Phase 5 完成情况
+# Phase 5.1 完成情况
 
-本轮已完成 Phase 5：论文图表、结果分析与复现整理。
+本轮已完成 Phase 5.1：Phase 5 复现元数据与系统模型图修复。
 
-新增脚本：
+修改范围：
 - `scripts/phase5_common.py`
 - `scripts/validate_final_results.py`
 - `scripts/build_paper_tables.py`
 - `scripts/plot_paper_figures.py`
 - `scripts/analyze_final_results.py`
 - `scripts/build_reproducibility_manifest.py`
-
-新增测试：
-- `tests/test_phase5_results.py`
 - `tests/test_phase5_figures.py`
 - `tests/test_phase5_reproducibility.py`
-
-新增文档：
-- `docs/phase5_result_analysis.md`
 - `docs/phase5_reproducibility.md`
 - `docs/phase5_figure_table_index.md`
-
-新增结果目录：
-- `results/phase5/source_data/`
-- `results/phase5/tables/`
-- `results/phase5/figures/`
-- `results/phase5/analysis/`
-- `results/phase5/manifests/`
+- `results/phase5/`
 
 关键完成项：
-- 已验证 Phase 4 正式结果完整性。
-- 已生成最终源数据副本和派生源数据。
-- 已生成 5 张论文表格的 CSV 和 Markdown 版本。
-- 已生成 9 张论文图的 600 DPI PNG 和 PDF 版本。
-- 已生成算法、消融、场景和约束统计 CSV。
-- 已生成复现 manifest 和 SHA256 校验文件。
-- 已完成结果分析、复现说明、图表索引文档。
+- manifest 已区分 `phase4_result_commit` 和 `phase5_code_commit`。
+- 已新增 `phase5_git_dirty`、`phase5_source_code_hash`、`phase5_generated_at`。
+- Phase 5 源码哈希覆盖 Phase 5 生成脚本和相关配置文件。
+- 正式运行 Phase 5 脚本前会检查相关代码是否已提交且工作区干净。
+- Figure 1 已补充 `d_HR`、`d_RL`、`theta_HR`、`theta_RL` 标注。
+- Figure 1 保持 600 DPI PNG，并同时生成 PDF。
+- 复现文档和图表索引已同步更新。
+- 未重新训练算法。
+- 未修改通信模型、奖励函数、baseline 或 Phase 4 原始结果。
 
-验收命令结果：
-- `python -m pytest --basetemp .pytest_tmp`：128 passed。
+正式生成元数据：
+- `phase5_code_commit`：`db142f8a484f47d4f40d803009fc60bd0497159f`
+- `phase5_git_dirty`：`false`
+- `phase5_source_code_hash`：`7b3842f5e02134d87837cb3e410c5d4247855db0254e9c109a63e5b8e701fa70`
+- Phase 4 正式结果 commit：`221c50db0924c5cd02ad69e0e440bbb39da79d6c`
+
+验收结果：
 - `python scripts/validate_final_results.py`：passed。
 - `python scripts/build_paper_tables.py`：已完成。
 - `python scripts/plot_paper_figures.py`：已完成。
 - `python scripts/analyze_final_results.py`：已完成。
 - `python scripts/build_reproducibility_manifest.py`：已完成。
-- 最后一轮 `python -m pytest --basetemp .pytest_tmp`：128 passed。
+- `python -m pytest --basetemp .pytest_tmp`：131 passed。
 
-最终结果摘要：
-- TD3 平均端到端速率：4.6390 Mbps。
-- DDPG 平均端到端速率：4.4652 Mbps。
-- SAC 平均端到端速率：4.8765 Mbps。
-- 最佳 baseline：BalancedLinkPolicy，4.8145 Mbps。
-- SAC 与最佳 baseline 的均值差：0.0620 Mbps，仅作为描述性差异。
-- DRL 约束违反次数偏高：TD3 86.13，DDPG 82.33，SAC 79.40。
-
-限制说明：
-- 未修改 TD3、DDPG、SAC 算法。
-- 未修改通信模型。
-- 未重新训练算法。
-- 未覆盖 Phase 1、Phase 3、Phase 4 原始结果。
+检查结果：
+- 未发现本机绝对路径。
+- Phase 5 数值 CSV/JSON 未发现 NaN 或 inf。
+- SHA256 文件已重新生成并覆盖 Figure 1。
 
 未完成事项：
 - 无。
 
 阶段判断：
-- Phase 5 已通过。
+- Phase 5.1 已通过。
 - 可以进入论文正文撰写、图表引用与最终排版。

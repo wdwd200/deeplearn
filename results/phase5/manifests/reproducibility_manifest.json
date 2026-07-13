@@ -77,12 +77,20 @@
     "results/phase4/algorithms/td3/seed_2/eval_log.csv",
     "results/phase4/algorithms/td3/seed_2/training_log.csv"
   ],
+  "analysis_files": [
+    "results/phase5/analysis/ablation_statistics.csv",
+    "results/phase5/analysis/algorithm_statistics.csv",
+    "results/phase5/analysis/constraint_statistics.csv",
+    "results/phase5/analysis/final_validation_report.json",
+    "results/phase5/analysis/final_validation_report.md",
+    "results/phase5/analysis/scenario_statistics.csv"
+  ],
   "config_files": [
     "configs/comm_env_default.yaml",
     "configs/phase4_experiments.yaml",
     "configs/phase4_eval_scenarios.yaml"
   ],
-  "created_at": "2026-07-13T05:34:31.972699+00:00",
+  "created_at": "2026-07-13T06:26:19.131789+00:00",
   "evaluation_scenarios": "configs/phase4_eval_scenarios.yaml",
   "figure_files": [
     "results/phase5/figures/figure_1_system_model.pdf",
@@ -497,9 +505,26 @@
     "numpy": "2.3.4",
     "torch": "2.12.0+cpu"
   },
-  "phase5_generation_commit": "88dd916db1a579adfe6dfc2f6964e22258e8367d",
+  "phase4_result_commit": "221c50db0924c5cd02ad69e0e440bbb39da79d6c",
+  "phase4_source_code_hash": "013686511bc9830caa578e6aa7d4ea21962f1c845348e8e7a6db66acce6e9f97",
+  "phase5_code_commit": "db142f8a484f47d4f40d803009fc60bd0497159f",
+  "phase5_generated_at": "2026-07-13T06:26:19.131789+00:00",
+  "phase5_generation_commit": "db142f8a484f47d4f40d803009fc60bd0497159f",
+  "phase5_git_dirty": false,
+  "phase5_source_code_hash": "7b3842f5e02134d87837cb3e410c5d4247855db0254e9c109a63e5b8e701fa70",
   "python_version": "3.14.0",
   "source_code_hash": "013686511bc9830caa578e6aa7d4ea21962f1c845348e8e7a6db66acce6e9f97",
+  "source_data_files": [
+    "results/phase5/source_data/phase1_baseline_results.csv",
+    "results/phase5/source_data/phase4_ablation_results.csv",
+    "results/phase5/source_data/phase4_ablation_summary.csv",
+    "results/phase5/source_data/phase4_algorithm_episode_results.csv",
+    "results/phase5/source_data/phase4_algorithm_summary.csv",
+    "results/phase5/source_data/phase4_constraint_summary.csv",
+    "results/phase5/source_data/phase4_training_curves.csv",
+    "results/phase5/source_data/representative_rate_trace.csv",
+    "results/phase5/source_data/representative_trajectories.csv"
+  ],
   "table_files": [
     "results/phase5/tables/table_1_system_parameters.csv",
     "results/phase5/tables/table_1_system_parameters.md",
