@@ -1,0 +1,36 @@
+{
+  "network": {
+    "activation": "relu",
+    "hidden_sizes": [
+      256,
+      256
+    ]
+  },
+  "normalizer": {
+    "clip_value": 5.0,
+    "enabled": true
+  },
+  "output": {
+    "root_dir": "results\\phase4\\algorithms\\sac\\seed_0"
+  },
+  "sac": {
+    "actor_lr": 0.0003,
+    "critic_lr": 0.0003,
+    "entropy_coef": 0.2,
+    "gamma": 0.99,
+    "tau": 0.005
+  },
+  "seed": 0,
+  "training": {
+    "batch_size": 128,
+    "episodes": 300,
+    "eval_interval": 10,
+    "max_steps": 100,
+    "replay_size": 100000,
+    "reward_scale": 1.0,
+    "save_interval": 50,
+    "start_steps": 1000,
+    "train_every": 100,
+    "updates_per_train": 1
+  }
+}

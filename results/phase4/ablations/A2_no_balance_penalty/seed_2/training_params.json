@@ -1,0 +1,41 @@
+{
+  "network": {
+    "activation": "relu",
+    "hidden_sizes": [
+      256,
+      256
+    ]
+  },
+  "normalizer": {
+    "clip_value": 5.0,
+    "enabled": true
+  },
+  "output": {
+    "root_dir": "results\\phase4\\ablations\\A2_no_balance_penalty\\seed_2"
+  },
+  "seed": 2,
+  "td3": {
+    "actor_lr": 0.0003,
+    "critic_lr": 0.0003,
+    "exploration_noise": 0.1,
+    "exploration_noise_decay": 0.995,
+    "gamma": 0.99,
+    "min_exploration_noise": 0.02,
+    "noise_clip": 0.5,
+    "policy_delay": 2,
+    "policy_noise": 0.2,
+    "tau": 0.005
+  },
+  "training": {
+    "batch_size": 128,
+    "episodes": 300,
+    "eval_interval": 10,
+    "max_steps": 100,
+    "replay_size": 100000,
+    "reward_scale": 1.0,
+    "save_interval": 50,
+    "start_steps": 1000,
+    "train_every": 100,
+    "updates_per_train": 1
+  }
+}

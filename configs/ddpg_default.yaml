@@ -1,0 +1,18 @@
+ddpg:
+  gamma: 0.99
+  tau: 0.005
+  actor_lr: 0.0003
+  critic_lr: 0.0003
+  exploration_noise: 0.1
+  exploration_noise_decay: 0.995
+  min_exploration_noise: 0.02
+
+network:
+  hidden_sizes:
+    - 256
+    - 256
+  activation: relu
+
+normalizer:
+  enabled: true
+  clip_value: 5.0

@@ -1,0 +1,33 @@
+seed: 2
+training:
+  episodes: 300
+  max_steps: 100
+  start_steps: 1000
+  batch_size: 128
+  replay_size: 100000
+  eval_interval: 10
+  save_interval: 50
+  train_every: 100
+  updates_per_train: 1
+  reward_scale: 1.0
+network:
+  hidden_sizes:
+    - 256
+    - 256
+  activation: relu
+normalizer:
+  enabled: true
+  clip_value: 5.0
+output:
+  root_dir: results\phase4\ablations\A0_full_td3\seed_2
+td3:
+  gamma: 0.99
+  tau: 0.005
+  actor_lr: 0.0003
+  critic_lr: 0.0003
+  policy_noise: 0.2
+  noise_clip: 0.5
+  policy_delay: 2
+  exploration_noise: 0.1
+  exploration_noise_decay: 0.995
+  min_exploration_noise: 0.02
