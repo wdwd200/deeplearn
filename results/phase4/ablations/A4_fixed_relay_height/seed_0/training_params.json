@@ -15,7 +15,7 @@
   },
   "batch_size": 128,
   "config_hash": "81b805418362f1e364a5dbf9d768314a2a0c29651ce58d04128fef09f20ceb6d",
-  "created_at": "2026-07-13T03:07:31.219051+00:00",
+  "created_at": "2026-07-13T04:01:09.561823+00:00",
   "environment_config": {
     "channel": {
       "antenna_model": "dipole",
@@ -167,7 +167,8 @@
     }
   ],
   "eval_scenarios_path": "configs\\phase4_eval_scenarios.yaml",
-  "git_commit": "4491a9548e1518e77dc54e088af6a2b14f2d70e9",
+  "git_commit": "221c50db0924c5cd02ad69e0e440bbb39da79d6c",
+  "git_dirty": false,
   "hidden_sizes": [
     256,
     256
@@ -184,6 +185,7 @@
     "clip_value": 5.0,
     "enabled": true
   },
+  "official_result": true,
   "output": {
     "root_dir": "results\\phase4\\ablations\\A4_fixed_relay_height\\seed_0"
   },
@@ -198,6 +200,7 @@
     "omega_R": 1e-06
   },
   "seed": 0,
+  "source_code_hash": "013686511bc9830caa578e6aa7d4ea21962f1c845348e8e7a6db66acce6e9f97",
   "td3": {
     "actor_lr": 0.0003,
     "critic_lr": 0.0003,

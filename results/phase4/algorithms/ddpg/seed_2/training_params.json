@@ -12,7 +12,7 @@
   },
   "batch_size": 128,
   "config_hash": "bc222a0d6052eb1180cba69bfd56de67f290c95c546bc0c2d31ca49e69c11468",
-  "created_at": "2026-07-13T03:00:56.805468+00:00",
+  "created_at": "2026-07-13T03:54:57.149230+00:00",
   "ddpg": {
     "actor_lr": 0.0003,
     "critic_lr": 0.0003,
@@ -173,7 +173,8 @@
     }
   ],
   "eval_scenarios_path": "configs\\phase4_eval_scenarios.yaml",
-  "git_commit": "4491a9548e1518e77dc54e088af6a2b14f2d70e9",
+  "git_commit": "221c50db0924c5cd02ad69e0e440bbb39da79d6c",
+  "git_dirty": false,
   "hidden_sizes": [
     256,
     256
@@ -190,6 +191,7 @@
     "clip_value": 5.0,
     "enabled": true
   },
+  "official_result": true,
   "output": {
     "root_dir": "results\\phase4\\algorithms\\ddpg\\seed_2"
   },
@@ -204,6 +206,7 @@
     "omega_R": 1e-06
   },
   "seed": 2,
+  "source_code_hash": "013686511bc9830caa578e6aa7d4ea21962f1c845348e8e7a6db66acce6e9f97",
   "training": {
     "batch_size": 128,
     "episodes": 300,
