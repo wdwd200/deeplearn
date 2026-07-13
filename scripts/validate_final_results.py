@@ -26,6 +26,7 @@ from phase5_common import (  # noqa: E402
     PHASE4_ROOT,
     PHASE5_ANALYSIS,
     all_phase4_training_param_paths,
+    assert_clean_phase5_generation,
     compare_summary_rows,
     ensure_phase5_dirs,
     finite_csv_report,
@@ -276,4 +277,3 @@ if __name__ == "__main__":
     print(json.dumps({"passed": result["passed"], "report": "results/phase5/analysis/final_validation_report.json"}, ensure_ascii=False))
     if not result["passed"]:
         raise SystemExit(1)
-    assert_clean_phase5_generation,
