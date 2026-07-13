@@ -1,81 +1,96 @@
-# 本轮任务完成情况：Phase 4 对比实验与消融实验
+# 本轮任务完成情况：Phase 3 TD3 正式训练、调参和稳定性改进
 
 ## 任务状态
 
 - 状态：已完成本地验收。
-- 当前阶段：Phase 4：对比实验与消融实验。
-- 本轮基于 Phase 3 已通过的 TD3 多 seed 结果继续推进。
-- 项目内没有更细化的 Phase 4 AGENTS 任务清单，因此本轮采用保守的轻量 Phase 4：TD3 与 Phase 1 baseline 对比、TD3-only 短程消融、结果汇总和图像生成。
-- 未新增 SAC、DDPG、PPO、多智能体算法、课程学习或新的通信模型。
-- 未修改 Phase 0/0.5/1 已验证的通信公式。
+- 当前阶段：Phase 3：TD3 正式训练、调参和稳定性改进。
+- 本轮只增强 TD3 训练框架。
+- 未新增 SAC、DDPG、PPO、多智能体算法、复杂课程学习、论文最终消融实验或大规模最终对比实验。
+- 未修改 Phase 0/0.5/1 已验证的通信模型主线文件和通信公式。
 
 ## 本轮新增文件
 
-- `configs/phase4_ablation.yaml`
-- `scripts/run_phase4_experiments.py`
-- `scripts/plot_phase4_results.py`
-- `tests/test_phase4_experiments.py`
-- `docs/phase4_comparison_ablation_spec.md`
-- `results/phase4/`
+- `configs/td3_default.yaml`
+- `configs/td3_sweep.yaml`
+- `scripts/train_td3_multiseed.py`
+- `scripts/evaluate_td3_multiseed.py`
+- `scripts/sweep_td3.py`
+- `scripts/plot_phase3_results.py`
+- `tests/test_td3_training_config.py`
+- `docs/phase3_td3_tuning_spec.md`
+- `results/phase3/`
+
+## 本轮修改文件
+
+- `scripts/train_td3.py`
+- `scripts/evaluate_td3.py`
+- `src/uav_relay_env/drl/networks.py`
+- `src/uav_relay_env/drl/td3_agent.py`
+- `src/uav_relay_env/drl/utils.py`
+- `tests/test_td3_agent.py`
+- `aaa.md`
 
 ## 本轮实现内容
 
-- 新增 Phase 4 轻量消融配置。
-- 新增 Phase 4 实验脚本，自动读取 Phase 1 baseline 和 Phase 3 TD3 多 seed 汇总。
-- 生成 TD3 与 baseline 的 Phase 4 方法对比表。
-- 运行 4 个 TD3-only 短程消融变体：
-  - `td3_short_default`
-  - `no_observation_normalizer`
-  - `small_network`
-  - `no_exploration_decay`
-- 为每个消融变体保存训练日志、评估日志、final model、best model、配置和参数。
-- 生成消融结果相对 Phase 3 TD3 multi-seed mean 的差值表。
-- 新增 Phase 4 绘图脚本，生成方法对比图、消融速率差值图、消融约束/中断计数图。
-- 新增 Phase 4 测试，覆盖配置读取、禁用算法名称、消融汇总逻辑、差值计算和方法对比表。
+- TD3 训练参数改为从配置文件读取。
+- 新增默认 TD3 配置和小规模 sweep 配置。
+- 支持多随机种子训练，默认 seeds 为 `0, 1, 2`。
+- 每个 seed 独立保存训练日志、评估日志、final model、best model、配置和参数。
+- 根据 eval average rate_e2e 保存 best model。
+- 多 seed 评估默认加载 best model。
+- 生成 TD3 多 seed mean/std。
+- 生成 TD3 与 Phase 1 baseline 的稳定对比表。
+- 增强训练日志字段：SNR、loss、Q mean、replay buffer size、exploration noise。
+- 支持 exploration noise decay，且不低于最小值。
+- 支持网络 hidden_sizes 从配置传入。
+- 支持小规模超参数搜索，最多运行 6 组配置。
+- 生成 Phase 3 训练、评估、loss、baseline 对比和 best seed 轨迹图。
 
 ## 验收命令结果
 
-- `pytest`：当前 PATH 中无法直接找到 `pytest` 命令。
-- `python -m pytest --basetemp .pytest_tmp`：`77 passed`。
-- `python scripts/run_phase4_experiments.py`：通过。
-- `python scripts/plot_phase4_results.py`：通过。
-- `rg -n "nan|inf" results\phase4 -g "*.csv" -g "*.json" -g "*.yaml"`：无匹配，Phase 4 结果文件未发现 NaN/inf 字符串。
+- `pytest`：`72 passed`，存在 1 个 pytest cache warning，不影响结果。
+- `python scripts/train_td3_multiseed.py`：通过。
+- `python scripts/evaluate_td3_multiseed.py`：通过。
+- `python scripts/sweep_td3.py`：通过。
+- `python scripts/plot_phase3_results.py`：通过。
+- 额外验证 `python scripts/run_baselines.py`：通过，Phase 1 baseline 未被破坏。
 
 ## 生成结果文件
 
-- `results/phase4/phase4_method_comparison.csv`
-- `results/phase4/phase4_ablation_summary.csv`
-- `results/phase4/phase4_ablation_vs_reference.csv`
-- `results/phase4/ablations/td3_short_default/`
-- `results/phase4/ablations/no_observation_normalizer/`
-- `results/phase4/ablations/small_network/`
-- `results/phase4/ablations/no_exploration_decay/`
-- `results/phase4/figures/phase4_td3_vs_baselines.png`
-- `results/phase4/figures/phase4_ablation_rate_delta.png`
-- `results/phase4/figures/phase4_ablation_constraints_outages.png`
+- `results/phase3/seed_0/`
+- `results/phase3/seed_1/`
+- `results/phase3/seed_2/`
+- `results/phase3/multiseed_summary.csv`
+- `results/phase3/multiseed_eval_summary.csv`
+- `results/phase3/td3_multiseed_mean_std.csv`
+- `results/phase3/td3_vs_baseline_summary.csv`
+- `results/phase3/sweep_results.csv`
+- `results/phase3/best_config.yaml`
+- `results/phase3/figures/td3_multiseed_eval_rate_curve.png`
+- `results/phase3/figures/td3_training_reward_multiseed.png`
+- `results/phase3/figures/td3_actor_critic_loss_curve.png`
+- `results/phase3/figures/td3_vs_baseline_mean_std_bar.png`
+- `results/phase3/figures/td3_best_seed_trajectory_3d.png`
+- `results/phase3/figures/td3_best_seed_rate_curve.png`
+- `results/phase3/figures/td3_best_seed_snr_curve.png`
 
-## Phase 4 方法对比结果
+## TD3 多 seed 结果
 
-- Phase 3 TD3 multi-seed mean average rate_e2e：`4.543915 Mbps`
-- Phase 3 TD3 multi-seed std average rate_e2e：`0.524517 Mbps`
+- TD3 multi-seed mean average rate_e2e：`4.543915 Mbps`
+- TD3 multi-seed std average rate_e2e：`0.524517 Mbps`
 - 最优 Phase 1 baseline：`balanced_link`
 - 最优 baseline average rate_e2e：`3.416483 Mbps`
 - TD3 mean - best baseline：`1.127432 Mbps`
+- outage count mean：`0.0`
+- constraint violation count mean：`84.333333`
 
-## Phase 4 消融结果
+## 训练稳定性观察
 
-- `td3_short_default` best eval average rate_e2e：`3.505167 Mbps`
-- `no_observation_normalizer` best eval average rate_e2e：`4.872519 Mbps`
-- `small_network` best eval average rate_e2e：`4.885812 Mbps`
-- `no_exploration_decay` best eval average rate_e2e：`3.523351 Mbps`
-
-## 阶段观察
-
-- 轻量短程消融显示 `small_network` 和 `no_observation_normalizer` 在本次单 seed 短训练中高于 Phase 3 TD3 multi-seed mean。
-- `td3_short_default` 和 `no_exploration_decay` 明显低于 Phase 3 TD3 multi-seed mean。
-- 这些结果只作为工程阶段诊断，不作为论文最终结论。
+- 3 个 seed 的 eval average rate_e2e 存在波动，std 约 `0.524517 Mbps`。
+- seed 0 明显低于 seed 1/2，说明 TD3 仍需要 Phase 4 前进一步调参和稳定性改进。
+- 当前结果不作为论文最终结论。
 
 ## 阶段判断
 
-- Phase 4 轻量对比与消融流程已跑通。
-- 当前仍未进入 SAC/DDPG/PPO 或最终论文级大规模实验。
+- Phase 3 本地验收通过。
+- 可以进入 Phase 4：对比实验与消融实验。

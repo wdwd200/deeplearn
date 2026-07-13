@@ -1,5 +1,0 @@
-variant,label,changed_setting,best_eval_average_rate_e2e,rate_delta_vs_phase3_td3_mean,rate_ratio_vs_phase3_td3_mean,constraint_delta_vs_phase3_td3_mean
-td3_short_default,TD3 short default,short TD3 control using Phase 3 defaults,3505167.310402973,-1038747.9336909293,0.7713980393800094,8.666666666666671
-no_observation_normalizer,No observation normalizer,normalizer.enabled=false,4872518.548461326,328603.304367424,1.0723172169187214,-1.3333333333333286
-small_network,Small actor critic network,"network.hidden_sizes=[128, 128]",4885812.24384887,341896.99975496717,1.0752428206488576,-7.333333333333329
-no_exploration_decay,No exploration noise decay,td3.exploration_noise_decay=1.0,3523350.878053004,-1020564.3660408985,0.7753997794374775,9.666666666666671

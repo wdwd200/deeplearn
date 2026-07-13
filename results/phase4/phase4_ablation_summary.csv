@@ -1,5 +1,0 @@
-variant,label,changed_setting,seed,episodes,best_eval_average_rate_e2e,final_eval_average_rate_e2e,best_eval_reward,final_eval_reward,best_episode,final_episode,eval_outage_count,eval_constraint_violation_count,model_dir
-td3_short_default,TD3 short default,short TD3 control using Phase 3 defaults,0,80,3505167.310402973,3284732.7820098363,240.97431522862075,215.0005726958125,50,80,0,93,results\phase4\ablations\td3_short_default
-no_observation_normalizer,No observation normalizer,normalizer.enabled=false,0,80,4872518.548461326,4872518.548461326,398.75350322695164,398.75350322695164,10,80,0,83,results\phase4\ablations\no_observation_normalizer
-small_network,Small actor critic network,"network.hidden_sizes=[128, 128]",0,80,4885812.24384887,4885812.24384887,407.1546708991754,407.1546708991754,80,80,0,77,results\phase4\ablations\small_network
-no_exploration_decay,No exploration noise decay,td3.exploration_noise_decay=1.0,0,80,3523350.878053004,3508636.830093418,239.05070106696587,239.39807522856958,60,80,0,94,results\phase4\ablations\no_exploration_decay
