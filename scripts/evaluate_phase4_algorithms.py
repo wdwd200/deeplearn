@@ -14,8 +14,10 @@ from phase4_common import (
     PHASE4_CONFIG_PATH,
     SUMMARY_FIELDS,
     baseline_episode_rows,
+    env_config_from_overrides,
     evaluate_saved_agent,
     load_phase4_config,
+    phase4_eval_scenarios,
     resolve_path,
     summarize_episode_results,
     write_csv,
@@ -27,6 +29,10 @@ def evaluate_phase4_algorithms(config_path: str | Path = PHASE4_CONFIG_PATH) -> 
     output_root = resolve_path(config["output"]["root_dir"])
     experiment = config["experiment"]
     seeds = [int(seed) for seed in experiment["training_seeds"]]
+    eval_scenarios = phase4_eval_scenarios(config)
+    if int(experiment["evaluation_episodes"]) != len(eval_scenarios):
+        raise ValueError("experiment.evaluation_episodes must match the fixed eval scenario count")
+    env_config = env_config_from_overrides()
     rows: list[dict] = []
 
     for algorithm in ALGORITHMS:
@@ -34,7 +40,7 @@ def evaluate_phase4_algorithms(config_path: str | Path = PHASE4_CONFIG_PATH) -> 
             model_dir = output_root / "algorithms" / algorithm / f"seed_{seed}"
             if not (model_dir / "best_actor.pt").exists():
                 raise FileNotFoundError(f"missing best model for {algorithm} seed={seed}: {model_dir}")
-            for eval_episode in range(int(experiment["evaluation_episodes"])):
+            for eval_episode, scenario in enumerate(eval_scenarios):
                 rows.append(
                     evaluate_saved_agent(
                         algorithm,
@@ -42,10 +48,12 @@ def evaluate_phase4_algorithms(config_path: str | Path = PHASE4_CONFIG_PATH) -> 
                         training_seed=seed,
                         evaluation_episode=eval_episode,
                         max_steps=int(experiment["max_steps"]),
+                        env_config=env_config,
+                        scenario=scenario,
                     )
                 )
 
-    rows.extend(baseline_episode_rows(config))
+    rows.extend(baseline_episode_rows(config, env_config=env_config, eval_scenarios=eval_scenarios))
     summary_rows = summarize_episode_results(rows)
     episode_path = output_root / "algorithm_episode_results.csv"
     summary_path = output_root / "algorithm_summary.csv"

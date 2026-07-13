@@ -1,4 +1,173 @@
 {
+  "action_transform": "none",
+  "algorithm": "sac",
+  "algorithm_config": {
+    "actor_lr": 0.0003,
+    "critic_lr": 0.0003,
+    "entropy_coef": 0.2,
+    "gamma": 0.99,
+    "tau": 0.005
+  },
+  "batch_size": 128,
+  "config_hash": "f8460ce86688f429c3a3c7e6772a791e27ad95a285a1ca8c6972884ab5f8fadc",
+  "created_at": "2026-07-13T03:01:17.273173+00:00",
+  "environment_config": {
+    "channel": {
+      "antenna_model": "dipole",
+      "beta0": 0.001,
+      "g_max": 1.0,
+      "g_min": 0.05,
+      "min_distance_m": 1.0,
+      "path_loss_exponent": 2.2
+    },
+    "mobility": {
+      "bounds_m": {
+        "x_max": 1000.0,
+        "x_min": 0.0,
+        "y_max": 1000.0,
+        "y_min": 0.0,
+        "z_max": 500.0,
+        "z_min": 50.0
+      },
+      "delta_t_s": 1.0,
+      "max_speed_mps": 30.0,
+      "max_steps": 100
+    },
+    "rate": {
+      "bandwidth_hz": 1000000.0,
+      "half_duplex": true,
+      "noise_power_w": 1e-13,
+      "power_HR_w": 1.0,
+      "power_RL_w": 1.0,
+      "r_min_bps": 1000000.0
+    },
+    "reward": {
+      "epsilon": 1e-09,
+      "kappa": 0.001,
+      "omega_B": 0.5,
+      "omega_C": 1.0,
+      "omega_E": 0.01,
+      "omega_O": 1.0,
+      "omega_R": 1e-06
+    },
+    "scenario": {
+      "q_H_m": [
+        500.0,
+        500.0,
+        1000.0
+      ],
+      "q_L_m": [
+        800.0,
+        500.0,
+        100.0
+      ],
+      "q_R_initial_m": [
+        500.0,
+        500.0,
+        200.0
+      ]
+    }
+  },
+  "episodes": 300,
+  "eval_scenarios": [
+    {
+      "id": "eval_0",
+      "q_H": [
+        500.0,
+        500.0,
+        1000.0
+      ],
+      "q_L": [
+        800.0,
+        800.0,
+        100.0
+      ],
+      "q_R": [
+        500.0,
+        500.0,
+        200.0
+      ]
+    },
+    {
+      "id": "eval_1",
+      "q_H": [
+        300.0,
+        700.0,
+        1000.0
+      ],
+      "q_L": [
+        750.0,
+        250.0,
+        100.0
+      ],
+      "q_R": [
+        500.0,
+        500.0,
+        250.0
+      ]
+    },
+    {
+      "id": "eval_2",
+      "q_H": [
+        700.0,
+        300.0,
+        1000.0
+      ],
+      "q_L": [
+        200.0,
+        800.0,
+        100.0
+      ],
+      "q_R": [
+        400.0,
+        600.0,
+        200.0
+      ]
+    },
+    {
+      "id": "eval_3",
+      "q_H": [
+        200.0,
+        200.0,
+        1000.0
+      ],
+      "q_L": [
+        850.0,
+        850.0,
+        100.0
+      ],
+      "q_R": [
+        500.0,
+        500.0,
+        300.0
+      ]
+    },
+    {
+      "id": "eval_4",
+      "q_H": [
+        800.0,
+        200.0,
+        1000.0
+      ],
+      "q_L": [
+        200.0,
+        800.0,
+        100.0
+      ],
+      "q_R": [
+        500.0,
+        500.0,
+        200.0
+      ]
+    }
+  ],
+  "eval_scenarios_path": "configs\\phase4_eval_scenarios.yaml",
+  "git_commit": "4491a9548e1518e77dc54e088af6a2b14f2d70e9",
+  "hidden_sizes": [
+    256,
+    256
+  ],
+  "max_steps": 100,
   "network": {
     "activation": "relu",
     "hidden_sizes": [
@@ -12,6 +181,16 @@
   },
   "output": {
     "root_dir": "results\\phase4\\algorithms\\sac\\seed_0"
+  },
+  "replay_size": 100000,
+  "reward_parameters": {
+    "epsilon": 1e-09,
+    "kappa": 0.001,
+    "omega_B": 0.5,
+    "omega_C": 1.0,
+    "omega_E": 0.01,
+    "omega_O": 1.0,
+    "omega_R": 1e-06
   },
   "sac": {
     "actor_lr": 0.0003,
@@ -32,5 +211,17 @@
     "start_steps": 1000,
     "train_every": 100,
     "updates_per_train": 1
-  }
+  },
+  "training_config": {
+    "activation": "relu",
+    "eval_interval": 10,
+    "normalizer_clip": 5.0,
+    "normalizer_enabled": true,
+    "reward_scale": 1.0,
+    "save_interval": 50,
+    "start_steps": 1000,
+    "train_every": 100,
+    "updates_per_train": 1
+  },
+  "training_seed": 0
 }

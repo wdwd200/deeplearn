@@ -8,7 +8,17 @@ SCRIPTS = ROOT / "scripts"
 if str(SCRIPTS) not in sys.path:
     sys.path.insert(0, str(SCRIPTS))
 
-from phase4_common import ALGORITHMS, build_agent, load_phase4_config, phase4_training_overrides, select_agent_action
+from phase4_common import (
+    ALGORITHMS,
+    EPISODE_RESULT_FIELDS,
+    baseline_episode_rows,
+    build_agent,
+    env_config_from_overrides,
+    load_phase4_config,
+    phase4_eval_scenarios,
+    phase4_training_overrides,
+    select_agent_action,
+)
 from uav_relay_env import UAVRelayCommEnv
 
 
@@ -51,6 +61,50 @@ def test_phase4_algorithms_use_same_seeds():
     assert [int(seed) for seed in config["experiment"]["training_seeds"]] == [0, 1, 2]
 
 
+def test_phase4_fixed_eval_scenarios_are_shared_and_unique():
+    config = load_phase4_config("configs/phase4_experiments.yaml")
+    scenarios = phase4_eval_scenarios(config)
+    scenario_ids = [scenario["id"] for scenario in scenarios]
+    signatures = [(tuple(scenario["q_H"]), tuple(scenario["q_R"]), tuple(scenario["q_L"])) for scenario in scenarios]
+    env_config = env_config_from_overrides()
+
+    assert scenario_ids == ["eval_0", "eval_1", "eval_2", "eval_3", "eval_4"]
+    assert len(set(scenario_ids)) == 5
+    assert len(set(signatures)) == 5
+    for scenario in scenarios:
+        assert env_config.mobility.bounds_m.contains(tuple(scenario["q_R"]))
+
+    for algorithm in ALGORITHMS:
+        overrides = phase4_training_overrides(config, 0, algorithm, Path("results/phase4") / algorithm / "seed_0")
+        assert overrides["eval_scenarios_path"] == config["experiment"]["eval_scenarios_path"]
+
+
+def test_phase4_training_seed_does_not_change_eval_scenarios():
+    config = load_phase4_config("configs/phase4_experiments.yaml")
+    reference = phase4_eval_scenarios(config)
+
+    for seed in config["experiment"]["training_seeds"]:
+        overrides = phase4_training_overrides(config, int(seed), "td3", Path("results/phase4") / "td3" / f"seed_{seed}")
+        assert phase4_eval_scenarios(overrides) == reference
+
+
+def test_phase4_results_record_scenario_id_for_drl_and_baselines():
+    config = load_phase4_config("configs/phase4_experiments.yaml")
+    tiny_config = dict(config)
+    tiny_config["experiment"] = dict(config["experiment"])
+    tiny_config["experiment"]["max_steps"] = 1
+    scenarios = phase4_eval_scenarios(tiny_config)
+
+    rows = baseline_episode_rows(
+        tiny_config,
+        env_config=env_config_from_overrides(),
+        eval_scenarios=scenarios,
+    )
+
+    assert "scenario_id" in EPISODE_RESULT_FIELDS
+    assert {row["scenario_id"] for row in rows} == {scenario["id"] for scenario in scenarios}
+
+
 def test_phase4_eval_action_disables_exploration_noise():
     config = load_phase4_config("configs/phase4_experiments.yaml")
     env = UAVRelayCommEnv()
@@ -62,6 +116,13 @@ def test_phase4_eval_action_disables_exploration_noise():
         action_a = select_agent_action(agent, obs, algorithm, explore=False)
         action_b = select_agent_action(agent, obs, algorithm, explore=False)
         assert np.allclose(action_a, action_b)
+
+
+def test_phase4_common_no_longer_uses_seed_generated_eval_scenes():
+    source = (ROOT / "scripts" / "phase4_common.py").read_text(encoding="utf-8")
+
+    assert "30_000" not in source
+    assert "40_000" not in source
 
 
 def test_phase4_output_dirs_do_not_overlap_and_are_relative():

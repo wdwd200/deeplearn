@@ -1,4 +1,7 @@
 seed: 0
+training_seed: 0
+algorithm: td3
+eval_scenarios_path: configs/phase4_eval_scenarios.yaml
 training:
   episodes: 300
   max_steps: 100

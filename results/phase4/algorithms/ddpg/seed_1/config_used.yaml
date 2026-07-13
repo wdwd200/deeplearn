@@ -1,4 +1,7 @@
 seed: 1
+training_seed: 1
+algorithm: ddpg
+eval_scenarios_path: configs/phase4_eval_scenarios.yaml
 training:
   episodes: 300
   max_steps: 100

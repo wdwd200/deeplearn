@@ -17,6 +17,18 @@ LOG_STD_MIN = -20.0
 LOG_STD_MAX = 2.0
 
 
+def velocity_ball_transform(raw_action: torch.Tensor, max_action: float) -> tuple[torch.Tensor, torch.Tensor]:
+    if max_action <= 0.0:
+        raise ValueError("max_action must be positive")
+    radius = torch.linalg.vector_norm(raw_action, dim=-1, keepdim=True)
+    action = float(max_action) * raw_action / (1.0 + radius)
+    log_det_jacobian = (
+        raw_action.shape[-1] * math.log(float(max_action))
+        - (raw_action.shape[-1] + 1) * torch.log1p(radius)
+    )
+    return action, log_det_jacobian
+
+
 class GaussianActor(nn.Module):
     def __init__(
         self,
@@ -47,17 +59,10 @@ class GaussianActor(nn.Module):
     def sample(self, obs: torch.Tensor, deterministic: bool = False) -> tuple[torch.Tensor, torch.Tensor]:
         mean, log_std = self(obs)
         std = log_std.exp()
-        if deterministic:
-            raw_action = mean
-        else:
-            raw_action = torch.distributions.Normal(mean, std).rsample()
-        squashed = torch.tanh(raw_action)
-        action = self.max_action * squashed
-        log_prob = torch.zeros((obs.shape[0], 1), dtype=obs.dtype, device=obs.device)
-        if not deterministic:
-            normal = torch.distributions.Normal(mean, std)
-            log_prob = normal.log_prob(raw_action) - torch.log(self.max_action * (1.0 - squashed.pow(2)) + 1.0e-6)
-            log_prob = log_prob.sum(dim=-1, keepdim=True)
+        normal = torch.distributions.Normal(mean, std)
+        raw_action = mean if deterministic else normal.rsample()
+        action, log_det_jacobian = velocity_ball_transform(raw_action, self.max_action)
+        log_prob = normal.log_prob(raw_action).sum(dim=-1, keepdim=True) - log_det_jacobian
         return action, log_prob
 
 
@@ -111,24 +116,13 @@ class SACAgent:
     def _to_tensor(self, values: np.ndarray) -> torch.Tensor:
         return torch.as_tensor(values, dtype=torch.float32, device=self.device)
 
-    def _clip_action_array(self, action: np.ndarray) -> np.ndarray:
-        norm = float(np.linalg.norm(action))
-        if norm > self.max_action and norm > 0.0:
-            action = action * (self.max_action / norm)
-        return np.clip(action, -self.max_action, self.max_action).astype(np.float32)
-
-    def _clip_action_tensor(self, action: torch.Tensor) -> torch.Tensor:
-        norm = torch.linalg.vector_norm(action, dim=-1, keepdim=True).clamp_min(1.0e-8)
-        scale = torch.clamp(self.max_action / norm, max=1.0)
-        return (action * scale).clamp(-self.max_action, self.max_action)
-
     def select_action(self, obs: Any, deterministic: bool = True, noise: bool | None = None) -> np.ndarray:
         if noise is not None:
             deterministic = not bool(noise)
         obs_array = self._normalize_obs(obs).reshape(1, -1)
         with torch.no_grad():
             action, _ = self.actor.sample(self._to_tensor(obs_array), deterministic=deterministic)
-        return self._clip_action_array(action.cpu().numpy()[0])
+        return action.cpu().numpy()[0].astype(np.float32)
 
     def train(self, replay_buffer: ReplayBuffer, batch_size: int = 128) -> dict[str, float | None]:
         if len(replay_buffer) == 0:
@@ -143,7 +137,6 @@ class SACAgent:
 
         with torch.no_grad():
             next_actions, next_log_prob = self.actor.sample(next_obs, deterministic=False)
-            next_actions = self._clip_action_tensor(next_actions)
             target_q1 = self.critic_target_1(next_obs, next_actions)
             target_q2 = self.critic_target_2(next_obs, next_actions)
             target_q = rewards + (1.0 - dones) * self.gamma * (
@@ -166,7 +159,6 @@ class SACAgent:
         self.critic_optimizer_2.step()
 
         sampled_actions, log_prob = self.actor.sample(obs, deterministic=False)
-        sampled_actions = self._clip_action_tensor(sampled_actions)
         q1_pi = self.critic_1(obs, sampled_actions)
         q2_pi = self.critic_2(obs, sampled_actions)
         actor_loss = (self.entropy_coef * log_prob - torch.minimum(q1_pi, q2_pi)).mean()

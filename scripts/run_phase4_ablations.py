@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import argparse
 import sys
 from pathlib import Path
 from typing import Any, Mapping
@@ -17,10 +18,13 @@ from phase4_common import (
     env_config_from_overrides,
     evaluate_saved_agent,
     load_phase4_config,
+    phase4_eval_scenarios,
+    phase4_training_metadata,
     phase4_training_overrides,
     resolve_path,
     summarize_episode_results,
     train_algorithm_seed,
+    validate_phase4_reuse,
     write_csv,
 )
 
@@ -60,7 +64,9 @@ def run_phase4_ablations(config_path: str | Path = PHASE4_CONFIG_PATH, force: bo
     ablation_root = output_root / "ablations"
     seeds = [int(seed) for seed in config["experiment"]["training_seeds"]]
     max_steps = int(config["experiment"]["max_steps"])
-    eval_episodes = int(config["experiment"]["evaluation_episodes"])
+    eval_scenarios = phase4_eval_scenarios(config)
+    if int(config["experiment"]["evaluation_episodes"]) != len(eval_scenarios):
+        raise ValueError("experiment.evaluation_episodes must match the fixed eval scenario count")
     all_rows: list[dict[str, Any]] = []
 
     for ablation_name, ablation_config in config["ablations"].items():
@@ -69,11 +75,27 @@ def run_phase4_ablations(config_path: str | Path = PHASE4_CONFIG_PATH, force: bo
         for seed in seeds:
             model_dir = ablation_root / ablation_name / f"seed_{seed}"
             overrides = phase4_training_overrides(config, seed, "td3", model_dir)
-            if force or not (model_dir / "best_actor.pt").exists():
-                train_algorithm_seed("td3", overrides, model_dir, env_config=env_config, action_transform=action_transform)
+            expected_metadata = phase4_training_metadata("td3", overrides, env_config, eval_scenarios, action_transform)
+            if model_dir.exists() and not force:
+                validate_phase4_reuse(model_dir, expected_metadata)
+                print(
+                    "reuse existing ablation {ablation} seed={seed}: {path} config_hash={config_hash}".format(
+                        ablation=ablation_name,
+                        seed=seed,
+                        path=model_dir,
+                        config_hash=expected_metadata["config_hash"],
+                    )
+                )
             else:
-                print(f"reuse existing ablation {ablation_name} seed={seed}: {model_dir}")
-            for eval_episode in range(eval_episodes):
+                train_algorithm_seed(
+                    "td3",
+                    overrides,
+                    model_dir,
+                    env_config=env_config,
+                    eval_scenarios=eval_scenarios,
+                    action_transform=action_transform,
+                )
+            for eval_episode, scenario in enumerate(eval_scenarios):
                 row = evaluate_saved_agent(
                     "td3",
                     model_dir,
@@ -81,6 +103,7 @@ def run_phase4_ablations(config_path: str | Path = PHASE4_CONFIG_PATH, force: bo
                     evaluation_episode=eval_episode,
                     max_steps=max_steps,
                     env_config=env_config,
+                    scenario=scenario,
                     action_transform=action_transform,
                 )
                 all_rows.append(_ablation_episode_row(ablation_name, row))
@@ -110,5 +133,13 @@ def run_phase4_ablations(config_path: str | Path = PHASE4_CONFIG_PATH, force: bo
     return all_rows, ablation_summary
 
 
+def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
+    parser = argparse.ArgumentParser(description="Run Phase 4 TD3 ablations.")
+    parser.add_argument("--config", default=str(PHASE4_CONFIG_PATH), help="Path to Phase 4 experiment YAML.")
+    parser.add_argument("--force", action="store_true", help="Retrain and overwrite Phase 4 ablation outputs.")
+    return parser.parse_args(argv)
+
+
 if __name__ == "__main__":
-    run_phase4_ablations()
+    args = parse_args()
+    run_phase4_ablations(args.config, force=args.force)

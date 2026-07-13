@@ -1,4 +1,178 @@
 {
+  "action_transform": "zero_z_action",
+  "algorithm": "td3",
+  "algorithm_config": {
+    "actor_lr": 0.0003,
+    "critic_lr": 0.0003,
+    "exploration_noise": 0.1,
+    "exploration_noise_decay": 0.995,
+    "gamma": 0.99,
+    "min_exploration_noise": 0.02,
+    "noise_clip": 0.5,
+    "policy_delay": 2,
+    "policy_noise": 0.2,
+    "tau": 0.005
+  },
+  "batch_size": 128,
+  "config_hash": "b22569340adb2b1768ae8872d0b621b7a7cad71ba3161c4f4f322ee25505a2c9",
+  "created_at": "2026-07-13T03:08:12.431976+00:00",
+  "environment_config": {
+    "channel": {
+      "antenna_model": "dipole",
+      "beta0": 0.001,
+      "g_max": 1.0,
+      "g_min": 0.05,
+      "min_distance_m": 1.0,
+      "path_loss_exponent": 2.2
+    },
+    "mobility": {
+      "bounds_m": {
+        "x_max": 1000.0,
+        "x_min": 0.0,
+        "y_max": 1000.0,
+        "y_min": 0.0,
+        "z_max": 500.0,
+        "z_min": 50.0
+      },
+      "delta_t_s": 1.0,
+      "max_speed_mps": 30.0,
+      "max_steps": 100
+    },
+    "rate": {
+      "bandwidth_hz": 1000000.0,
+      "half_duplex": true,
+      "noise_power_w": 1e-13,
+      "power_HR_w": 1.0,
+      "power_RL_w": 1.0,
+      "r_min_bps": 1000000.0
+    },
+    "reward": {
+      "epsilon": 1e-09,
+      "kappa": 0.001,
+      "omega_B": 0.5,
+      "omega_C": 1.0,
+      "omega_E": 0.01,
+      "omega_O": 1.0,
+      "omega_R": 1e-06
+    },
+    "scenario": {
+      "q_H_m": [
+        500.0,
+        500.0,
+        1000.0
+      ],
+      "q_L_m": [
+        800.0,
+        500.0,
+        100.0
+      ],
+      "q_R_initial_m": [
+        500.0,
+        500.0,
+        200.0
+      ]
+    }
+  },
+  "episodes": 300,
+  "eval_scenarios": [
+    {
+      "id": "eval_0",
+      "q_H": [
+        500.0,
+        500.0,
+        1000.0
+      ],
+      "q_L": [
+        800.0,
+        800.0,
+        100.0
+      ],
+      "q_R": [
+        500.0,
+        500.0,
+        200.0
+      ]
+    },
+    {
+      "id": "eval_1",
+      "q_H": [
+        300.0,
+        700.0,
+        1000.0
+      ],
+      "q_L": [
+        750.0,
+        250.0,
+        100.0
+      ],
+      "q_R": [
+        500.0,
+        500.0,
+        250.0
+      ]
+    },
+    {
+      "id": "eval_2",
+      "q_H": [
+        700.0,
+        300.0,
+        1000.0
+      ],
+      "q_L": [
+        200.0,
+        800.0,
+        100.0
+      ],
+      "q_R": [
+        400.0,
+        600.0,
+        200.0
+      ]
+    },
+    {
+      "id": "eval_3",
+      "q_H": [
+        200.0,
+        200.0,
+        1000.0
+      ],
+      "q_L": [
+        850.0,
+        850.0,
+        100.0
+      ],
+      "q_R": [
+        500.0,
+        500.0,
+        300.0
+      ]
+    },
+    {
+      "id": "eval_4",
+      "q_H": [
+        800.0,
+        200.0,
+        1000.0
+      ],
+      "q_L": [
+        200.0,
+        800.0,
+        100.0
+      ],
+      "q_R": [
+        500.0,
+        500.0,
+        200.0
+      ]
+    }
+  ],
+  "eval_scenarios_path": "configs\\phase4_eval_scenarios.yaml",
+  "git_commit": "4491a9548e1518e77dc54e088af6a2b14f2d70e9",
+  "hidden_sizes": [
+    256,
+    256
+  ],
+  "max_steps": 100,
   "network": {
     "activation": "relu",
     "hidden_sizes": [
@@ -12,6 +186,16 @@
   },
   "output": {
     "root_dir": "results\\phase4\\ablations\\A4_fixed_relay_height\\seed_2"
+  },
+  "replay_size": 100000,
+  "reward_parameters": {
+    "epsilon": 1e-09,
+    "kappa": 0.001,
+    "omega_B": 0.5,
+    "omega_C": 1.0,
+    "omega_E": 0.01,
+    "omega_O": 1.0,
+    "omega_R": 1e-06
   },
   "seed": 2,
   "td3": {
@@ -37,5 +221,17 @@
     "start_steps": 1000,
     "train_every": 100,
     "updates_per_train": 1
-  }
+  },
+  "training_config": {
+    "activation": "relu",
+    "eval_interval": 10,
+    "normalizer_clip": 5.0,
+    "normalizer_enabled": true,
+    "reward_scale": 1.0,
+    "save_interval": 50,
+    "start_steps": 1000,
+    "train_every": 100,
+    "updates_per_train": 1
+  },
+  "training_seed": 2
 }
